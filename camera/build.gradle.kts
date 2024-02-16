@@ -32,6 +32,11 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
+            // Camera2
+            implementation(libs.camera.camera2)
+            implementation(libs.camera.view)
+            implementation(libs.camera.lifecycle)
+            implementation(libs.camera.extensions)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -59,6 +64,12 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     buildTypes {
         getByName("release") {
