@@ -21,13 +21,11 @@ import state.CamSelector
 import state.CameraState
 import state.CaptureMode
 import state.FlashMode
-import state.ImageAnalyzer
 import state.ImageCaptureMode
 import state.ImageTargetSize
 import state.ImplementationMode
 import state.QualitySelector
 import state.ScaleType
-import state.update
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -43,7 +41,7 @@ actual fun CameraPreviewImpl(
     enableTorch: Boolean,
     zoomRatio: Float,
     //implementationMode: ImplementationMode,
-    imageAnalyzer: ImageAnalyzer?,
+    //imageAnalyzer: ImageAnalyzer?,
     exposureCompensation: Int,
     isImageAnalysisEnabled: Boolean,
    // isFocusOnTapEnabled: Boolean,
@@ -109,7 +107,7 @@ actual fun CameraPreviewImpl(
                         imageCaptureTargetSize = imageCaptureTargetSize,
                         scaleType = scaleType,
                         isImageAnalysisEnabled = isImageAnalysisEnabled,
-                        imageAnalyzer = imageAnalyzer,
+                        //imageAnalyzer = imageAnalyzer,
                         //implementationMode = implementationMode,
                         //isFocusOnTapEnabled = isFocusOnTapEnabled,
                         flashMode = flashMode,

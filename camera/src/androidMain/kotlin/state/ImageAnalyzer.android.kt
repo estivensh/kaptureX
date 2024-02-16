@@ -2,6 +2,7 @@ package state
 
 import androidx.camera.core.ImageAnalysis
 
+/*
 actual class ImageAnalyzer(
     private val cameraState: CameraState,
     imageAnalysisBackpressureStrategy: ImageAnalysisBackpressureStrategy,
@@ -23,15 +24,20 @@ actual class ImageAnalyzer(
         imageAnalysisTargetSize: ImageTargetSize?,
         imageAnalysisImageQueueDepth: Int,
     ) = with(cameraState) {
-        /*this.imageAnalysisBackpressureStrategy = imageAnalysisBackpressureStrategy.strategy
+        */
+/*this.imageAnalysisBackpressureStrategy = imageAnalysisBackpressureStrategy.strategy
         this.imageAnalysisTargetSize = imageAnalysisTargetSize?.toOutputSize()
-        this.imageAnalysisImageQueueDepth = imageAnalysisImageQueueDepth*/
+        this.imageAnalysisImageQueueDepth = imageAnalysisImageQueueDepth*//*
+
     }
 
-    /**
+    */
+/**
      * Update actual image analysis instance.
-     * */
-    /*public fun update(
+     * *//*
+
+    */
+/*public fun update(
         imageAnalysisBackpressureStrategy: ImageAnalysisBackpressureStrategy = ImageAnalysisBackpressureStrategy.find(
             cameraState.imageAnalysisBackpressureStrategy
         ),
@@ -45,5 +51,6 @@ actual class ImageAnalyzer(
             imageAnalysisImageQueueDepth
         )
         this.analyzer = analyzer
-    }*/
-}
+    }*//*
+
+}*/

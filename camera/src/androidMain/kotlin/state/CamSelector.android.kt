@@ -13,7 +13,7 @@ actual enum class CamSelector(
     Front(CameraSelector.DEFAULT_FRONT_CAMERA),
     Back(CameraSelector.DEFAULT_BACK_CAMERA);
 
-    val inverse: CamSelector
+    actual val inverse: CamSelector
         get() = when (this) {
             Front -> Back
             Back -> Front

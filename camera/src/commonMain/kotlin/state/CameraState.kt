@@ -1,11 +1,13 @@
 package state
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import extensions.ImageFile
 
 expect class CameraState {
     val controller: CameraController
     internal var flashMode: FlashMode
-    internal var hasFlashUnit: Boolean
+    var hasFlashUnit: Boolean
     val isZoomSupported: Boolean
     var maxZoom: Float
         internal set
@@ -31,6 +33,23 @@ expect class CameraState {
     fun startZoom()
     fun hasCamera(cameraSelector: CamSelector): Boolean
     fun isImageAnalysisSupported(cameraSelector: CamSelector): Boolean
+    fun takePicture(onResult: (ImageCaptureResult) -> Unit)
+    internal fun update(
+        camSelector: CamSelector,
+        captureMode: CaptureMode,
+        scaleType: ScaleType,
+        imageCaptureTargetSize: ImageTargetSize?,
+        isImageAnalysisEnabled: Boolean,
+        //imageAnalyzer: ImageAnalyzer?,
+        //implementationMode: ImplementationMode,
+        //isFocusOnTapEnabled: Boolean,
+        flashMode: FlashMode,
+        zoomRatio: Float,
+        imageCaptureMode: ImageCaptureMode,
+        enableTorch: Boolean,
+        exposureCompensation: Int,
+        // videoQualitySelector: QualitySelector,
+    )
 
     companion object {
         val INITIAL_ZOOM_VALUE: Float
@@ -39,26 +58,8 @@ expect class CameraState {
 
 }
 
-fun CameraState.update(
-    camSelector: CamSelector,
-    captureMode: CaptureMode,
-    scaleType: ScaleType,
-    imageCaptureTargetSize: ImageTargetSize?,
-    isImageAnalysisEnabled: Boolean,
-    imageAnalyzer: ImageAnalyzer?,
-    //implementationMode: ImplementationMode,
-    //isFocusOnTapEnabled: Boolean,
-    flashMode: FlashMode,
-    zoomRatio: Float,
-    imageCaptureMode: ImageCaptureMode,
-    enableTorch: Boolean,
-    exposureCompensation: Int,
-   // videoQualitySelector: QualitySelector,
-) {
-    this.camSelector = camSelector
-    this.scaleType = scaleType
-    this.flashMode = flashMode
-}
-
 @Composable
 expect fun rememberCameraState(): CameraState
+
+@Composable
+expect fun rememberCamSelector(selector: CamSelector): MutableState<CamSelector>

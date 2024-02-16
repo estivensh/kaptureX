@@ -1,11 +1,13 @@
 package state
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFoundation.AVCaptureDevice
@@ -46,7 +48,7 @@ actual class CameraState() {
             }
         }
 
-    internal actual var hasFlashUnit: Boolean by mutableStateOf(controller?.hasFlash ?: true)
+    actual var hasFlashUnit: Boolean by mutableStateOf(controller?.hasFlash ?: true)
     actual val isZoomSupported: Boolean
             by derivedStateOf { maxZoom != 1F }
     actual var maxZoom: Float
@@ -133,6 +135,35 @@ actual class CameraState() {
     actual val initialExposure: Int
         get() = controller.exposureTargetOffset.toInt()
 
+    internal actual fun update(
+        camSelector: CamSelector,
+        captureMode: CaptureMode,
+        scaleType: ScaleType,
+        imageCaptureTargetSize: ImageTargetSize?,
+        isImageAnalysisEnabled: Boolean,
+        flashMode: FlashMode,
+        zoomRatio: Float,
+        imageCaptureMode: ImageCaptureMode,
+        enableTorch: Boolean,
+        exposureCompensation: Int
+    ) {
+        this.camSelector = camSelector
+        this.captureMode = captureMode
+        this.scaleType = scaleType
+        this.imageCaptureTargetSize = imageCaptureTargetSize
+        this.isImageAnalysisEnabled = isImageAnalysisEnabled
+        /*this.imageAnalyzer = imageAnalyzer?.analyzer
+        this.implementationMode = implementationMode
+        this.isFocusOnTapEnabled = isFocusOnTapEnabled*/
+        this.flashMode = flashMode
+        this.enableTorch = enableTorch
+        //this.isFocusOnTapSupported = meteringPoint.isFocusMeteringSupported
+        this.imageCaptureMode = imageCaptureMode
+        //this.videoQualitySelector = videoQualitySelector
+        //setExposureCompensation(exposureCompensation)
+        //setZoomRatio(zoomRatio)
+    }
+
 
 }
 
@@ -140,3 +171,9 @@ actual class CameraState() {
 actual fun rememberCameraState(): CameraState {
     return remember { CameraState() }
 }
+
+@Composable
+actual fun rememberCamSelector(selector: CamSelector): MutableState<CamSelector> =
+    rememberSaveable(saver = CamSelector.Saver) {
+        mutableStateOf(selector)
+    }

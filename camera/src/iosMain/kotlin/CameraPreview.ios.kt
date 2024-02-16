@@ -25,7 +25,7 @@ actual fun CameraPreviewImpl(
     enableTorch: Boolean,
     zoomRatio: Float,
     //implementationMode: ImplementationMode,
-    imageAnalyzer: ImageAnalyzer?,
+    //imageAnalyzer: ImageAnalyzer?,
     exposureCompensation: Int,
     isImageAnalysisEnabled: Boolean,
    //isFocusOnTapEnabled: Boolean,

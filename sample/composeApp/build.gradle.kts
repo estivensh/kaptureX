@@ -41,6 +41,7 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(projects.camera)
+            api("io.github.hoc081098:kmp-viewmodel:0.6.2")
         }
     }
 }

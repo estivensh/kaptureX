@@ -1,3 +1,8 @@
 package state
 
-expect enum class CamSelector
+expect enum class CamSelector {
+    Front,
+    Back;
+
+    val inverse: CamSelector
+}

@@ -1,3 +1,3 @@
 package state
 
-expect class ImageAnalyzer
+//expect class ImageAnalyzer()

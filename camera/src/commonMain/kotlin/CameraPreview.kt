@@ -6,7 +6,6 @@ import state.CamSelector
 import state.CameraState
 import state.CaptureMode
 import state.FlashMode
-import state.ImageAnalyzer
 import state.ImageCaptureMode
 import state.ImageTargetSize
 import state.ScaleType
@@ -25,7 +24,7 @@ fun CameraPreview(
     enableTorch: Boolean = cameraState.enableTorch,
     exposureCompensation: Int = cameraState.initialExposure,
     zoomRatio: Float = 1F,
-    imageAnalyzer: ImageAnalyzer? = null,
+    //imageAnalyzer: ImageAnalyzer? = null,
     //implementationMode: ImplementationMode = cameraState.implementationMode,
     isImageAnalysisEnabled: Boolean = cameraState.isImageAnalysisEnabled,
     //isFocusOnTapEnabled: Boolean = cameraState.isFocusOnTapEnabled,
@@ -54,7 +53,7 @@ fun CameraPreview(
         scaleType = scaleType,
         enableTorch = enableTorch,
         zoomRatio = zoomRatio,
-        imageAnalyzer = imageAnalyzer,
+        //imageAnalyzer = imageAnalyzer,
         isImageAnalysisEnabled = isImageAnalysisEnabled,
         // implementationMode = implementationMode,
         //isFocusOnTapEnabled = isFocusOnTapEnabled,
@@ -83,7 +82,7 @@ expect fun CameraPreviewImpl(
     enableTorch: Boolean,
     zoomRatio: Float,
     //implementationMode: ImplementationMode,
-    imageAnalyzer: ImageAnalyzer?,
+    //imageAnalyzer: ImageAnalyzer?,
     exposureCompensation: Int,
     isImageAnalysisEnabled: Boolean,
     //isFocusOnTapEnabled: Boolean,
