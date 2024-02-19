@@ -4,6 +4,7 @@ import camerakmp.sample.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
+import state.FlashMode
 
 @OptIn(ExperimentalResourceApi::class)
 enum class Flash(
@@ -22,3 +23,7 @@ enum class Flash(
         }
     }
 }
+
+expect fun Flash.toFlashMode(): FlashMode
+
+expect fun FlashMode.toFlash(isTorchEnabled: Boolean): Flash

@@ -12,10 +12,14 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.TorchState
+import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.CameraController
 import androidx.camera.view.CameraController.IMAGE_ANALYSIS
 import androidx.camera.view.CameraController.OutputSize.UNASSIGNED_ASPECT_RATIO
 import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.video.AudioConfig
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
@@ -31,12 +35,14 @@ import extensions.compatMainExecutor
 import extensions.isImageAnalysisSupported
 import java.io.File
 import java.util.UUID
+import androidx.core.util.Consumer
 
 actual class CameraState(private val context: Context) {
 
     actual val controller: LifecycleCameraController = LifecycleCameraController(context)
     private val mainExecutor = context.compatMainExecutor
     private val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as? CameraManager
+    private var recordController: Recording? = null
 
     init {
         controller.initializationFuture.addListener(
@@ -232,13 +238,13 @@ actual class CameraState(private val context: Context) {
     ) {
         try {
             val relativePath = "Camposer"
-            val externalDir = "Pictures${File.separator}$relativePath"
+            val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}$relativePath"
             val currentFileName = "${System.currentTimeMillis()}-${UUID.randomUUID()}"
             val contentValues = ContentValues().apply {
                 put(MediaStore.MediaColumns.DISPLAY_NAME, currentFileName)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                    put(MediaStore.Images.Media.RELATIVE_PATH, externalDir)
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, externalDir)
                 }
             }
             val outputOptions = ImageCapture.OutputFileOptions
@@ -274,6 +280,99 @@ actual class CameraState(private val context: Context) {
         }
     }
 
+    private fun prepareRecording(
+        onError: (VideoCaptureResult.Error) -> Unit,
+        onRecordBuild: () -> Recording
+    ) {
+        try {
+            Log.i(TAG, "Prepare recording")
+            isRecording = true
+            recordController = onRecordBuild()
+        } catch (exception: Exception){
+            Log.i(TAG, "Fail to record! - $exception")
+            isRecording = false
+            onError(
+                VideoCaptureResult.Error(
+                    if (!controller.isVideoCaptureEnabled){
+                        "Video capture is not enabled, please set captureMode as CaptureMode.Video - ${exception.message}"
+                    } else "${exception.message}", exception
+                )
+            )
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    actual fun startRecording(onResult: (VideoCaptureResult) -> Unit)  =
+        prepareRecording(onResult){
+            Log.i(TAG, "Start recording")
+            val relativePath = "Camposer"
+            val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}$relativePath"
+            val currentFileName = "${System.currentTimeMillis()}-${UUID.randomUUID()}"
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, currentFileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, externalDir)
+                }
+            }
+            val mediaStoreOutputOptions = MediaStoreOutputOptions
+                .Builder(
+                    context.contentResolver,
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                )
+                .setContentValues(contentValues)
+                .build()
+            controller.startRecording(
+                mediaStoreOutputOptions,
+                AudioConfig.create(true),
+                mainExecutor,
+                getConsumerEvent(onResult)
+            )
+        }
+
+    private fun getConsumerEvent(
+        onResult: (VideoCaptureResult) -> Unit
+    ): Consumer<VideoRecordEvent> = Consumer<VideoRecordEvent> { event ->
+        Log.i(TAG, "Video Recorder Event - $event")
+        if (event is VideoRecordEvent.Finalize) {
+            isRecording = false
+            val result = when {
+                !event.hasError() -> VideoCaptureResult.Success(
+                    ImageFile(
+                        event.outputResults.outputUri,
+                        context.contentResolver
+                    )
+                )
+                else -> VideoCaptureResult.Error(
+                    "Video error code: ${event.error}",
+                    event.cause
+                )
+            }
+            recordController = null
+            onResult(result)
+        }
+    }
+
+    actual fun stopRecording() {
+        recordController?.stop()?.also {
+            isRecording = false
+        }
+    }
+
+    actual fun pauseRecording() {
+        recordController?.pause()
+    }
+
+    actual fun resumeRecording() {
+        recordController?.resume()
+    }
+
+    actual fun toggleRecording(onResult: (VideoCaptureResult) -> Unit) {
+        when(isRecording){
+            true -> stopRecording()
+            false -> startRecording(onResult)
+        }
+    }
 
 }
 
@@ -298,3 +397,14 @@ actual fun rememberCamSelector(selector: CamSelector): MutableState<CamSelector>
     rememberSaveable(saver = CamSelector.Saver) {
         mutableStateOf(selector)
     }
+
+@Composable
+actual fun CameraState.rememberFlashMode(
+    initialFlashMode: FlashMode,
+    useSaver: Boolean
+): MutableState<FlashMode> = rememberConditionalState(
+    initialValue = initialFlashMode,
+    defaultValue = FlashMode.Off,
+    useSaver = useSaver,
+    predicate = hasFlashUnit
+)

@@ -164,6 +164,24 @@ actual class CameraState() {
         //setZoomRatio(zoomRatio)
     }
 
+    actual fun takePicture(onResult: (ImageCaptureResult) -> Unit) {
+    }
+
+    actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) {
+    }
+
+    actual fun stopRecording() {
+    }
+
+    actual fun pauseRecording() {
+    }
+
+    actual fun resumeRecording() {
+    }
+
+    actual fun toggleRecording(onResult: (VideoCaptureResult) -> Unit) {
+    }
+
 
 }
 
@@ -177,3 +195,11 @@ actual fun rememberCamSelector(selector: CamSelector): MutableState<CamSelector>
     rememberSaveable(saver = CamSelector.Saver) {
         mutableStateOf(selector)
     }
+
+@Composable
+actual fun CameraState.rememberFlashMode(
+    initialFlashMode: FlashMode,
+    useSaver: Boolean
+): MutableState<FlashMode> {
+    TODO("Not yet implemented")
+}

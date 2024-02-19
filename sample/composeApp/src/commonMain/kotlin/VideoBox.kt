@@ -11,10 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -25,16 +26,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun VideoBox(
     modifier: Modifier = Modifier,
     isRecording: Boolean,
 ) {
-    var timer by remember { mutableStateOf(0) }
-    var lastTimer by remember { mutableStateOf(0) }
+    var timer by remember { mutableIntStateOf(0) }
+    var lastTimer by remember { mutableIntStateOf(0) }
     AnimatedVisibility(
         modifier = modifier,
         visible = isRecording,

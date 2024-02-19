@@ -17,3 +17,4 @@ actual enum class FlashMode constructor(val mode: Int) {
         internal fun find(mode: Int) = entries.firstOrNull { it.mode == mode } ?: Off
     }
 }
+

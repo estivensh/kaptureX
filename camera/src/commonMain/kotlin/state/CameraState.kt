@@ -34,6 +34,11 @@ expect class CameraState {
     fun hasCamera(cameraSelector: CamSelector): Boolean
     fun isImageAnalysisSupported(cameraSelector: CamSelector): Boolean
     fun takePicture(onResult: (ImageCaptureResult) -> Unit)
+    fun startRecording(onResult: (VideoCaptureResult) -> Unit)
+    fun stopRecording()
+    fun pauseRecording()
+    fun resumeRecording()
+    fun toggleRecording(onResult: (VideoCaptureResult) -> Unit)
     internal fun update(
         camSelector: CamSelector,
         captureMode: CaptureMode,
@@ -63,3 +68,9 @@ expect fun rememberCameraState(): CameraState
 
 @Composable
 expect fun rememberCamSelector(selector: CamSelector): MutableState<CamSelector>
+
+@Composable
+expect fun CameraState.rememberFlashMode(
+    initialFlashMode: FlashMode,
+    useSaver: Boolean = true
+): MutableState<FlashMode>

@@ -6,7 +6,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -28,7 +28,6 @@ fun SettingsBox(
     isVideo: Boolean,
     hasFlashUnit: Boolean,
     onFlashModeChanged: (Flash) -> Unit,
-    onConfigurationClick: () -> Unit,
     onZoomFinish: () -> Unit,
 ) {
     Box(modifier = modifier) {
@@ -61,10 +60,6 @@ fun SettingsBox(
                 )
             }
         }
-        ConfigurationBox(
-            modifier = Modifier.align(Alignment.TopEnd),
-            onConfigurationClick = onConfigurationClick
-        )
     }
     LaunchedEffect(zoomRatio, zoomHasChanged) {
         delay(1_000)

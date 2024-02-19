@@ -3,39 +3,86 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import extensions.ImageFile
-import extensions.toByteArray
 import model.CameraOption
 import model.Flash
+import model.toCaptureMode
+import model.toFlash
+import model.toFlashMode
+import moe.tlaster.precompose.PreComposeApp
+import moe.tlaster.precompose.navigation.BackStackEntry
+import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.RouteBuilder
+import moe.tlaster.precompose.navigation.SwipeProperties
+import moe.tlaster.precompose.navigation.rememberNavigator
+import moe.tlaster.precompose.navigation.transition.NavTransition
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import state.CamSelector
 import state.CameraState
+import state.FlashMode
 import state.ImageCaptureResult
+import state.VideoCaptureResult
 import state.rememberCamSelector
 import state.rememberCameraState
+import state.rememberFlashMode
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
-    MaterialTheme {
-        CameraScreen(
-            onGalleryClick = {
+    PreComposeApp {
+        MaterialTheme {
+            val navigator = rememberNavigator()
+            NavHost(
+                navigator = navigator,
+                navTransition = NavTransition(),
+                initialRoute = Router.Camera.route
+            ) {
+                newScene(Router.Camera) {
+                    CameraScreen(
+                        onGalleryClick = {
+                            navigator.navigater(Router.Gallery)
+                        }
+                    )
+                }
+                newScene(Router.Gallery) {
+                    GalleryScreen(
+                        onBackPressed = {
+                            navigator.popBackStack()
+                        },
+                        onPreviewClick = {
 
-            },
-            onConfigurationClick = {
-
+                        }
+                    )
+                }
             }
-        )
+        }
     }
+
+}
+
+fun RouteBuilder.newScene(
+    route: Router,
+    deepLinks: List<String> = emptyList(),
+    navTransition: NavTransition? = null,
+    swipeProperties: SwipeProperties? = null,
+    content: @Composable (BackStackEntry) -> Unit,
+) {
+    scene(
+        route = route.route,
+        deepLinks = deepLinks,
+        navTransition = navTransition,
+        swipeProperties = swipeProperties,
+        content = content
+    )
 }
 
 
@@ -43,20 +90,26 @@ fun App() {
 fun CameraScreen(
     //viewModel: CameraViewModel = CameraViewModel(),
     onGalleryClick: () -> Unit,
-    onConfigurationClick: () -> Unit,
 ) {
     val cameraState = rememberCameraState()
+    var lastPicture by remember { mutableStateOf<ImageFile?>(null) }
 
     CameraSection(
         cameraState = cameraState,
         useFrontCamera = true,
         usePinchToZoom = false,
         useTapToFocus = false,
-        lastPicture = null,
-        qrCodeText = "",
+        lastPicture = lastPicture,
         onGalleryClick = onGalleryClick,
-        onConfigurationClick = onConfigurationClick,
         onRecording = {
+            cameraState.toggleRecording {
+                when (it) {
+                    is VideoCaptureResult.Error -> println("Estado: ${it.throwable?.message}")
+                    is VideoCaptureResult.Success -> {
+                        lastPicture = it.imageFile
+                    }
+                }
+            }
             //viewModel.toggleRecording(context.contentResolver, cameraState)
         },
         onTakePicture = {
@@ -67,7 +120,9 @@ fun CameraScreen(
                             println("Estado: ${it.throwable.message}")
                         }
 
-                        is ImageCaptureResult.Success -> println("Estado: ${it.imageFile}")
+                        is ImageCaptureResult.Success -> {
+                            lastPicture = it.imageFile
+                        }
                     }
                 }
             )
@@ -114,20 +169,18 @@ fun CameraSection(
     useFrontCamera: Boolean,
     usePinchToZoom: Boolean,
     useTapToFocus: Boolean,
-    qrCodeText: String?,
     lastPicture: ImageFile?,
     onTakePicture: () -> Unit,
     onRecording: () -> Unit,
     onGalleryClick: () -> Unit,
     //onAnalyzeImage: (ImageProxy) -> Unit,
-    onConfigurationClick: () -> Unit,
 ) {
-    //var flashMode by cameraState.rememberFlashMode()
+    var flashMode by cameraState.rememberFlashMode(FlashMode.valueOf("Off"))
     var camSelector by rememberCamSelector(if (useFrontCamera) CamSelector.Front else CamSelector.Back)
     var zoomRatio by rememberSaveable { mutableStateOf(cameraState.minZoom) }
     var zoomHasChanged by rememberSaveable { mutableStateOf(false) }
     val hasFlashUnit by rememberUpdatedState(cameraState.hasFlashUnit)
-    var cameraOption by rememberSaveable { mutableStateOf(CameraOption.Photo) }
+    var cameraOption by rememberSaveable { mutableStateOf(CameraOption.Video) }
     val isRecording by rememberUpdatedState(cameraState.isRecording)
     var enableTorch = true
     //var enableTorch by cameraState.rememberTorch(initialTorch = false)
@@ -135,7 +188,7 @@ fun CameraSection(
     CameraPreview(
         cameraState = cameraState,
         camSelector = camSelector,
-        //captureMode = cameraOption.toCaptureMode(),
+        captureMode = cameraOption.toCaptureMode(),
         enableTorch = enableTorch,
         zoomRatio = zoomRatio,
         //imageAnalyzer = ImageAnalyzer(),
@@ -150,17 +203,14 @@ fun CameraSection(
             modifier = Modifier.fillMaxSize(),
             zoomHasChanged = zoomHasChanged,
             zoomRatio = zoomRatio,
-            flashMode = Flash.Auto,
-            //flashMode = flashMode.toFlash(enableTorch),
+            flashMode = flashMode.toFlash(enableTorch),
             isRecording = isRecording,
             cameraOption = cameraOption,
             hasFlashUnit = hasFlashUnit,
-            qrCodeText = qrCodeText,
             isVideoSupported = true,
-            //isVideoSupported = cameraState.isVideoSupported,
             onFlashModeChanged = { flash ->
                 enableTorch = flash == Flash.Always
-                //flashMode = flash.toFlashMode()
+                flashMode = flash.toFlashMode()
             },
             onZoomFinish = { zoomHasChanged = false },
             lastPicture = lastPicture,
@@ -174,7 +224,6 @@ fun CameraSection(
             },
             onCameraOptionChanged = { cameraOption = it },
             onGalleryClick = onGalleryClick,
-            onConfigurationClick = onConfigurationClick
         )
     }
 }
@@ -188,7 +237,6 @@ fun CameraInnerContent(
     isRecording: Boolean,
     cameraOption: CameraOption,
     hasFlashUnit: Boolean,
-    qrCodeText: String?,
     lastPicture: ImageFile?,
     isVideoSupported: Boolean,
     onGalleryClick: () -> Unit,
@@ -196,7 +244,6 @@ fun CameraInnerContent(
     onZoomFinish: () -> Unit,
     onRecording: () -> Unit,
     onTakePicture: () -> Unit,
-    onConfigurationClick: () -> Unit,
     onSwitchCamera: () -> Unit,
     onCameraOptionChanged: (CameraOption) -> Unit,
 ) {
@@ -215,7 +262,6 @@ fun CameraInnerContent(
             zoomHasChanged = zoomHasChanged,
             isRecording = isRecording,
             onFlashModeChanged = onFlashModeChanged,
-            onConfigurationClick = onConfigurationClick,
             onZoomFinish = onZoomFinish,
         )
         ActionBox(
@@ -226,7 +272,6 @@ fun CameraInnerContent(
             lastPicture = lastPicture,
             onGalleryClick = onGalleryClick,
             cameraOption = cameraOption,
-            qrCodeText = qrCodeText,
             onTakePicture = onTakePicture,
             isRecording = isRecording,
             isVideoSupported = isVideoSupported,

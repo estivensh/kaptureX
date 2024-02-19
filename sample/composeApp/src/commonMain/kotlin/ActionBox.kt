@@ -12,7 +12,6 @@ fun ActionBox(
     modifier: Modifier = Modifier,
     cameraOption: CameraOption,
     isRecording: Boolean,
-    qrCodeText: String?,
     lastPicture: ImageFile?,
     isVideoSupported: Boolean,
     onGalleryClick: () -> Unit,
@@ -24,12 +23,6 @@ fun ActionBox(
     Column(
         modifier = modifier,
     ) {
-        QrCodeBox(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            qrCodeText = qrCodeText
-        )
         OptionSection(
             modifier = Modifier.fillMaxWidth(),
             isVideoSupported = isVideoSupported,
