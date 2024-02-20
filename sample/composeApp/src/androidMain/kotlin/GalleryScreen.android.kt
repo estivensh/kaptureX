@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toFile
 import camerakmp.sample.composeapp.generated.resources.Res
+import camerakmp.sample.composeapp.generated.resources.play
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.decode.VideoFrameDecoder

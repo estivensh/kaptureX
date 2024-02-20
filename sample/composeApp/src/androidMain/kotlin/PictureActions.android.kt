@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import camerakmp.sample.composeapp.generated.resources.Res
+import camerakmp.sample.composeapp.generated.resources.gallery
 import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlinCocoapods)
 }
 
 kotlin {
@@ -15,20 +16,29 @@ kotlin {
             }
         }
     }
-    
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        version = "1.0"
+        ios.deploymentTarget = "16.1"
+        podfile = project.file("../iosApp/Podfile")
+        framework {
             baseName = "ComposeApp"
-            isStatic = true
+            isStatic = false
         }
     }
     
     sourceSets {
-        
+        all {
+            languageSettings {
+                optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+            }
+        }
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -43,8 +53,8 @@ kotlin {
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.precompose)
+            implementation(libs.accompanist.permissions)
             implementation(projects.camera)
-            api("io.github.hoc081098:kmp-viewmodel:0.6.2")
         }
     }
 }
@@ -82,4 +92,3 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
-

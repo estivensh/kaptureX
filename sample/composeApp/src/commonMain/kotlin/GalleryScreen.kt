@@ -27,8 +27,7 @@ fun GalleryScreen(
     Section(
         title = {
             Text(stringResource(Res.string.gallery).replaceFirstChar { it.uppercase() })
-        },
-        onBackPressed = onBackPressed
+        }, onBackPressed = onBackPressed
     ) {
         Box(Modifier.padding(it)) {
             GallerySection(
@@ -42,8 +41,7 @@ fun GalleryScreen(
 @Composable
 private fun GalleryEmpty() {
     Box(
-        Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Text(
             modifier = Modifier.padding(24.dp),
@@ -66,10 +64,7 @@ fun GalleryAnimationVisibility(
     content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
-        modifier = modifier,
-        enter = fadeIn(),
-        exit = fadeOut(),
-        visible = visible
+        modifier = modifier, enter = fadeIn(), exit = fadeOut(), visible = visible
     ) { content() }
 }
 

@@ -1,4 +1,7 @@
 rootProject.name = "CameraKMP"
+include(":sample:composeApp")
+include(":camera")
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
@@ -17,6 +20,3 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-
-include(":sample:composeApp")
-include(":camera")

@@ -1,6 +1,10 @@
 package model
 
 import camerakmp.sample.composeapp.generated.resources.Res
+import camerakmp.sample.composeapp.generated.resources.flash_always
+import camerakmp.sample.composeapp.generated.resources.flash_auto
+import camerakmp.sample.composeapp.generated.resources.flash_off
+import camerakmp.sample.composeapp.generated.resources.flash_on
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource

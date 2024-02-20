@@ -88,7 +88,6 @@ fun RouteBuilder.newScene(
 
 @Composable
 fun CameraScreen(
-    //viewModel: CameraViewModel = CameraViewModel(),
     onGalleryClick: () -> Unit,
 ) {
     val cameraState = rememberCameraState()
@@ -96,9 +95,9 @@ fun CameraScreen(
 
     CameraSection(
         cameraState = cameraState,
-        useFrontCamera = true,
-        usePinchToZoom = false,
-        useTapToFocus = false,
+        useFrontCamera = false,
+        usePinchToZoom = true,
+        useTapToFocus = true,
         lastPicture = lastPicture,
         onGalleryClick = onGalleryClick,
         onRecording = {
@@ -175,7 +174,7 @@ fun CameraSection(
     onGalleryClick: () -> Unit,
     //onAnalyzeImage: (ImageProxy) -> Unit,
 ) {
-    var flashMode by cameraState.rememberFlashMode(FlashMode.valueOf("Off"))
+    var flashMode by cameraState.rememberFlashMode(FlashMode.valueOf("On"))
     var camSelector by rememberCamSelector(if (useFrontCamera) CamSelector.Front else CamSelector.Back)
     var zoomRatio by rememberSaveable { mutableStateOf(cameraState.minZoom) }
     var zoomHasChanged by rememberSaveable { mutableStateOf(false) }
@@ -189,6 +188,7 @@ fun CameraSection(
         cameraState = cameraState,
         camSelector = camSelector,
         captureMode = cameraOption.toCaptureMode(),
+        flashMode = flashMode,
         enableTorch = enableTorch,
         zoomRatio = zoomRatio,
         //imageAnalyzer = ImageAnalyzer(),
@@ -196,7 +196,7 @@ fun CameraSection(
         onZoomRatioChanged = {
             zoomHasChanged = true
             zoomRatio = it
-        }
+        },
     ) {
         BlinkPictureBox(lastPicture, cameraOption == CameraOption.Video)
         CameraInnerContent(

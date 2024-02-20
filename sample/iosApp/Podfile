@@ -1,0 +1,7 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'iosApp' do
+  use_frameworks!
+  platform :ios, '16.1'
+  pod 'composeApp', :path => '../composeApp'
+end
