@@ -13,10 +13,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,19 +29,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toFile
-import camerakmp.sample.composeapp.generated.resources.Res
-import camerakmp.sample.composeapp.generated.resources.play
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
 import coil.request.videoFramePercent
-import extensions.ImageFile
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import java.io.File
 
@@ -49,8 +44,10 @@ import java.io.File
 @Composable
 actual fun GallerySection(onPreviewClick: (String) -> Unit) {
     val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}Camposer"
-    val externalStorage = Environment.getExternalStoragePublicDirectory(externalDir).apply { mkdirs() }
-    val externalFiles = externalStorage.listFiles()?.sortedByDescending { it.lastModified() }.orEmpty()
+    val externalStorage =
+        Environment.getExternalStoragePublicDirectory(externalDir).apply { mkdirs() }
+    val externalFiles =
+        externalStorage.listFiles()?.sortedByDescending { it.lastModified() }.orEmpty()
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Fixed(3),
@@ -101,7 +98,7 @@ actual fun GallerySection(onPreviewClick: (String) -> Unit) {
                                     .background(Color.White, CircleShape),
                                 imageVector = Icons.Rounded.PlayArrow,
                                 tint = Color.Black,
-                                contentDescription = org.jetbrains.compose.resources.stringResource(Res.string.play),
+                                contentDescription = "org.jetbrains.compose.resources.stringResource(Res.string.play)",
                             )
                         }
                     }

@@ -14,9 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import camerakmp.sample.composeapp.generated.resources.Res
+//import camerakmp.sample.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.stringResource
+//import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -26,7 +26,7 @@ fun GalleryScreen(
 ) {
     Section(
         title = {
-            Text(stringResource(Res.string.gallery).replaceFirstChar { it.uppercase() })
+            Text("stringResource(Res.string.gallery).replaceFirstChar { it.uppercase() }")
         }, onBackPressed = onBackPressed
     ) {
         Box(Modifier.padding(it)) {
@@ -46,7 +46,7 @@ private fun GalleryEmpty() {
         Text(
             modifier = Modifier.padding(24.dp),
             textAlign = TextAlign.Center,
-            text = stringResource(Res.string.gallery_empty_description).replaceFirstChar { it.uppercase() },
+            text = "stringResource(Res.string.gallery_empty_description).replaceFirstChar { it.uppercase() }",
             fontSize = 18.sp,
             color = Color.Gray,
         )

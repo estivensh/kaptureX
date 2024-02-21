@@ -16,9 +16,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import camerakmp.sample.composeapp.generated.resources.Res
-import camerakmp.sample.composeapp.generated.resources.app_name
-import camerakmp.sample.composeapp.generated.resources.request_allow_permissions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -71,10 +68,11 @@ private fun DeniedSection(onClick: () -> Unit) {
     ) {
         Text(
             modifier = Modifier.padding(16.dp),
-            text = org.jetbrains.compose.resources.stringResource(
+            /*text = org.jetbrains.compose.resources.stringResource(
                 Res.string.request_allow_permissions,
                 org.jetbrains.compose.resources.stringResource(Res.string.app_name),
-            ).replaceFirstChar { it.uppercase() },
+            ).replaceFirstChar { it.uppercase() },*/
+            text = "Hhaha",
             fontSize = 20.sp,
             textAlign = TextAlign.Center
         )

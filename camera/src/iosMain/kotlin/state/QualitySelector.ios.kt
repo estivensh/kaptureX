@@ -1,3 +1,5 @@
 package state
 
-actual class QualitySelector
+actual class QualitySelector {
+
+}

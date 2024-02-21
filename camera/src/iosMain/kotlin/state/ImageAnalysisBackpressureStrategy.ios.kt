@@ -1,3 +1,5 @@
 package state
 
-actual enum class ImageAnalysisBackpressureStrategy
+actual enum class ImageAnalysisBackpressureStrategy {
+
+}

@@ -37,6 +37,7 @@ kotlin {
             implementation(libs.camera.view)
             implementation(libs.camera.lifecycle)
             implementation(libs.camera.extensions)
+            implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

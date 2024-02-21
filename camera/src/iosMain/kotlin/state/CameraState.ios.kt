@@ -17,7 +17,6 @@ import platform.AVFoundation.AVCaptureDevicePositionUnspecified
 import platform.AVFoundation.AVCaptureDeviceTypeBuiltInWideAngleCamera
 import platform.AVFoundation.AVCaptureSession
 import platform.AVFoundation.AVMediaTypeVideo
-import platform.AVFoundation.exposureMode
 import platform.AVFoundation.exposureTargetOffset
 import platform.AVFoundation.flashMode
 import platform.AVFoundation.hasFlash
@@ -43,7 +42,7 @@ actual class CameraState() {
     internal actual var flashMode: FlashMode
         get() = FlashMode.find(controller.flashMode)
         set(value) {
-            if (hasFlashUnit && flashMode != value){
+            if (hasFlashUnit && flashMode != value) {
                 controller.setFlashMode(value.mode)
             }
         }
@@ -74,13 +73,12 @@ actual class CameraState() {
     }
 
     internal actual var scaleType: ScaleType = ScaleType.Fill
-    internal actual var camSelector: CamSelector
-        = CamSelector.Back
+    internal actual var camSelector: CamSelector = CamSelector.Back
         set(value) {
             when {
                 value == field -> Unit
                 !isRecording && hasCamera(value) -> {
-                    if (controller.position != value.selector){
+                    if (controller.position != value.selector) {
                         //controller.setposi = value.selector
                         field = value
                     }
@@ -96,7 +94,7 @@ actual class CameraState() {
             }
         }
     internal actual var imageCaptureMode: ImageCaptureMode
-        get() = TODO("Not yet implemented")
+        get() = ImageCaptureMode.V
         set(value) {}
     actual var isImageAnalysisSupported: Boolean by mutableStateOf(
         isImageAnalysisSupported(camSelector)
@@ -123,14 +121,14 @@ actual class CameraState() {
     }
 
     actual fun isImageAnalysisSupported(cameraSelector: CamSelector): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
     internal actual var enableTorch: Boolean
         get() = controller.hasFlash && controller.isTorchActive()
         set(value) {}
     internal actual var imageCaptureTargetSize: ImageTargetSize?
-        get() = TODO("Not yet implemented")
+        get() = null
         set(value) {}
     actual val initialExposure: Int
         get() = controller.exposureTargetOffset.toInt()
@@ -200,6 +198,9 @@ actual fun rememberCamSelector(selector: CamSelector): MutableState<CamSelector>
 actual fun CameraState.rememberFlashMode(
     initialFlashMode: FlashMode,
     useSaver: Boolean
-): MutableState<FlashMode> {
-    TODO("Not yet implemented")
-}
+): MutableState<FlashMode> = rememberConditionalState(
+    initialValue = initialFlashMode,
+    defaultValue = FlashMode.Off,
+    useSaver = useSaver,
+    predicate = hasFlashUnit
+)

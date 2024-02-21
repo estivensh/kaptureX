@@ -1,5 +1,4 @@
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
@@ -17,8 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import camerakmp.sample.composeapp.generated.resources.Res
-import camerakmp.sample.composeapp.generated.resources.gallery
 import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
@@ -26,13 +23,15 @@ import coil.request.videoFrameMillis
 import extensions.ImageFile
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
     var shouldAnimate by remember { mutableStateOf(false) }
-    val animScale by animateFloatAsState(targetValue = if (shouldAnimate) 1.25F else 1F, label = "gallery_button_animate")
+    val animScale by animateFloatAsState(
+        targetValue = if (shouldAnimate) 1.25F else 1F,
+        label = "gallery_button_animate"
+    )
 
     AsyncImage(
         modifier = Modifier
@@ -47,7 +46,7 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
             .decoderFactory(VideoFrameDecoder.Factory())
             .videoFrameMillis(1)
             .build(),
-        contentDescription = stringResource(Res.string.gallery)
+        contentDescription = "stringResource(Res.string.gallery)"
     )
 
     LaunchedEffect(lastPicture) {
