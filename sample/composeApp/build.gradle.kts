@@ -55,6 +55,7 @@ kotlin {
             implementation(libs.precompose)
             implementation(libs.accompanist.permissions)
             implementation(projects.camera)
+            implementation("io.github.aakira:napier:2.7.1")
         }
     }
 }

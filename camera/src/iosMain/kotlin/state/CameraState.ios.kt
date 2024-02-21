@@ -9,29 +9,59 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import extensions.ImageFile
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.autoreleasepool
 import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.AVCaptureDeviceDiscoverySession
 import platform.AVFoundation.AVCaptureDeviceInput
 import platform.AVFoundation.AVCaptureDevicePositionUnspecified
 import platform.AVFoundation.AVCaptureDeviceTypeBuiltInWideAngleCamera
+import platform.AVFoundation.AVCaptureFileOutput
+import platform.AVFoundation.AVCaptureFileOutputRecordingDelegateProtocol
+import platform.AVFoundation.AVCaptureInput
+import platform.AVFoundation.AVCaptureMovieFileOutput
+import platform.AVFoundation.AVCapturePhoto
+import platform.AVFoundation.AVCapturePhotoCaptureDelegateProtocol
+import platform.AVFoundation.AVCapturePhotoOutput
+import platform.AVFoundation.AVCapturePhotoSettings
 import platform.AVFoundation.AVCaptureSession
+import platform.AVFoundation.AVCaptureVideoStabilizationModeAuto
+import platform.AVFoundation.AVMediaTypeAudio
 import platform.AVFoundation.AVMediaTypeVideo
 import platform.AVFoundation.exposureTargetOffset
+import platform.AVFoundation.fileDataRepresentation
 import platform.AVFoundation.flashMode
 import platform.AVFoundation.hasFlash
 import platform.AVFoundation.isTorchActive
 import platform.AVFoundation.position
 import platform.AVFoundation.setFlashMode
 import platform.AVFoundation.videoMinZoomFactorForCenterStage
+import platform.Foundation.NSArray
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSError
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSSearchPathDirectory
+import platform.Foundation.NSSearchPathDomainMask
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
+import platform.Foundation.fileURLWithPathComponents
+import platform.Foundation.lastPathComponent
+import platform.Foundation.pathComponents
+import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
 actual class CameraState() {
 
 
-    private var captureSession: AVCaptureSession? = null
+    private lateinit var captureSession: AVCaptureSession
     actual val controller: AVCaptureDevice =
         AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
+    val photoOutput = AVCapturePhotoOutput()
+    private lateinit var movieFileOutput: AVCaptureMovieFileOutput
+    private lateinit var outputFileURL: NSURL
 
     init {
         captureSession = AVCaptureSession()
@@ -162,22 +192,120 @@ actual class CameraState() {
         //setZoomRatio(zoomRatio)
     }
 
-    actual fun takePicture(onResult: (ImageCaptureResult) -> Unit) {
+    actual fun takePicture(
+        onResult: (ImageCaptureResult) -> Unit
+    ) {
+        val photoSettings = AVCapturePhotoSettings.photoSettings()
+        photoOutput.capturePhotoWithSettings(
+            photoSettings,
+            object : NSObject(), AVCapturePhotoCaptureDelegateProtocol {
+                override fun captureOutput(
+                    output: AVCapturePhotoOutput,
+                    didFinishProcessingPhoto: AVCapturePhoto,
+                    error: NSError?
+                ) {
+                    if (error == null) {
+                        didFinishProcessingPhoto.fileDataRepresentation()?.let { photoData ->
+                            onResult(ImageCaptureResult.Success(ImageFile(photoData)))
+                        }
+                    } else {
+                        onResult(ImageCaptureResult.Error(Exception(error.localizedDescription())))
+                    }
+                }
+            })
     }
 
+    @OptIn(BetaInteropApi::class)
     actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) {
+        autoreleasepool {
+            captureSession = AVCaptureSession()
+
+            val camera = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
+            setupVideoRecording(camera)
+
+            captureSession.startRunning()
+
+            // Configurar el archivo de salida para guardar el video
+
+            val documentsPath = NSSearchPathForDirectoriesInDomains(
+                NSDocumentDirectory, NSUserDomainMask, true
+            ).firstOrNull()
+            outputFileURL = NSURL.fileURLWithPath("$documentsPath/output.mov")
+            val paths = NSFileManager.defaultManager().URLsForDirectory(NSDocumentDirectory, NSUserDomainMask) as List<NSURL>
+            val pathComponents = paths[0].pathComponents ?: emptyList<String>()
+            val newPathComponents = pathComponents + "output.mov"
+            val fileURL = NSURL.fileURLWithPathComponents(newPathComponents as List<*>)
+
+            NSFileManager.defaultManager.removeItemAtURL(fileURL ?: NSURL(), error =null)
+
+            // Iniciar la grabación de video
+            movieFileOutput.startRecordingToOutputFileURL(fileURL ?: NSURL(), recordingDelegate = object : NSObject(),
+                AVCaptureFileOutputRecordingDelegateProtocol {
+                override fun captureOutput(
+                    output: AVCaptureFileOutput,
+                    didFinishRecordingToOutputFileAtURL: NSURL,
+                    fromConnections: List<*>,
+                    error: NSError?
+                ) {
+                    if (error == null) {
+                        println("Estado Success: ${didFinishRecordingToOutputFileAtURL.absoluteString}")
+                        onResult(VideoCaptureResult.Success(ImageFile(didFinishRecordingToOutputFileAtURL.absoluteString.orEmpty())))
+                    } else {
+                        println("Estado Error: ${error.localizedDescription()} ${error.code} ${error.domain} ")
+                        onResult(VideoCaptureResult.Error(message = error.localizedDescription, throwable = null))
+                    }
+                }
+            })
+            isRecording = true
+        }
     }
 
     actual fun stopRecording() {
+        movieFileOutput.stopRecording().also {
+            isRecording = false
+        }
     }
 
     actual fun pauseRecording() {
+        //movieFileOutput.resu
     }
 
     actual fun resumeRecording() {
+
     }
 
+
     actual fun toggleRecording(onResult: (VideoCaptureResult) -> Unit) {
+        when (isRecording) {
+            true -> stopRecording()
+            false -> startRecording(onResult)
+        }
+    }
+
+    private fun setupVideoRecording(camera: AVCaptureDevice) {
+        captureSession.beginConfiguration()
+        val videoInput = AVCaptureDeviceInput.deviceInputWithDevice(camera, null) as? AVCaptureInput
+        if (videoInput != null && captureSession.canAddInput(videoInput)) {
+            captureSession.addInput(videoInput)
+        }
+
+        val audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio) ?: AVCaptureDevice()
+        val audioInput = AVCaptureDeviceInput.deviceInputWithDevice(audioDevice, null) ?: AVCaptureDeviceInput()
+        if (captureSession.canAddInput(audioInput)) {
+            captureSession.addInput(audioInput)
+        }
+
+        movieFileOutput = AVCaptureMovieFileOutput()
+        if (captureSession.canAddOutput(movieFileOutput)) {
+            captureSession.addOutput(movieFileOutput)
+        }
+
+        val connection = movieFileOutput.connectionWithMediaType(AVMediaTypeVideo)
+        if (connection?.isVideoStabilizationSupported() == true) {
+            connection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto
+        }
+
+        captureSession.commitConfiguration()
     }
 
 

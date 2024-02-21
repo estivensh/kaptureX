@@ -50,5 +50,9 @@
     <string>$(PRODUCT_NAME) uses camera to setup profile picture of the user.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>$(PRODUCT_NAME) access photo library to setup profile picture of the user.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>$(PRODUCT_NAME) access microphone of the user.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>$(PRODUCT_NAME) access microphone of the user.</string>
 </dict>
 </plist>

@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import extensions.ImageFile
+import io.github.aakira.napier.Napier
 import model.CameraOption
 import model.Flash
 import model.toCaptureMode
@@ -103,7 +104,9 @@ fun CameraScreen(
         onRecording = {
             cameraState.toggleRecording {
                 when (it) {
-                    is VideoCaptureResult.Error -> println("Estado: ${it.throwable?.message}")
+                    is VideoCaptureResult.Error -> {
+
+                    }
                     is VideoCaptureResult.Success -> {
                         lastPicture = it.imageFile
                     }
@@ -117,10 +120,13 @@ fun CameraScreen(
                     when (it) {
                         is ImageCaptureResult.Error -> {
                             println("Estado: ${it.throwable.message}")
+                            Napier.d { "${it.throwable.message}" }
                         }
 
                         is ImageCaptureResult.Success -> {
                             lastPicture = it.imageFile
+                            println("Estado: ${it.imageFile}")
+                            Napier.d { "${it.imageFile}" }
                         }
                     }
                 }
