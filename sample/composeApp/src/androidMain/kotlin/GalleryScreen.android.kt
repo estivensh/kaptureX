@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import camerakmp.sample.composeapp.generated.resources.Res
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.decode.VideoFrameDecoder
@@ -98,7 +99,9 @@ actual fun GallerySection(onPreviewClick: (String) -> Unit) {
                                     .background(Color.White, CircleShape),
                                 imageVector = Icons.Rounded.PlayArrow,
                                 tint = Color.Black,
-                                contentDescription = "org.jetbrains.compose.resources.stringResource(Res.string.play)",
+                                contentDescription = org.jetbrains.compose.resources.stringResource(
+                                    Res.string.play
+                                ),
                             )
                         }
                     }

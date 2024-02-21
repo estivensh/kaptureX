@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import model.Flash
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-//import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -91,7 +91,7 @@ private fun FlashButton(
             modifier = Modifier.size(32.dp),
             painter = painterResource(flash.drawableRes),
             colorFilter = ColorFilter.tint(if (enabled) tintColor else Color.Gray),
-            contentDescription = "stringResource(flash.contentRes)"
+            contentDescription = stringResource(flash.contentRes)
         )
     }
 }

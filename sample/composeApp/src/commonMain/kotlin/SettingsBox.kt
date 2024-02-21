@@ -31,13 +31,13 @@ fun SettingsBox(
     onZoomFinish: () -> Unit,
 ) {
     Box(modifier = modifier) {
-        /*FlashBox(
+        FlashBox(
             modifier = Modifier.align(Alignment.TopStart),
             hasFlashUnit = hasFlashUnit,
             flashMode = flashMode,
             isVideo = isVideo,
             onFlashModeChanged = onFlashModeChanged
-        )*/
+        )
         Column(
             modifier = Modifier.align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,

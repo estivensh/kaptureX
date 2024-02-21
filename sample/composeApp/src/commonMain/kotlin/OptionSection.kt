@@ -14,9 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import model.CameraOption
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun OptionSection(
     modifier: Modifier = Modifier,
@@ -40,7 +39,7 @@ fun OptionSection(
                     )
                     .padding(vertical = 4.dp)
                     .width(80.dp),
-                text = "stringResource(option.titleRes).replaceFirstChar { it.uppercase() }",
+                text = stringResource(option.titleRes).replaceFirstChar { it.uppercase() },
                 fontSize = 16.sp,
                 maxLines = 1,
                 fontWeight = FontWeight.Bold,

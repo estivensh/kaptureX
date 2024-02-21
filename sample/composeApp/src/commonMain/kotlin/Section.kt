@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import camerakmp.sample.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +30,7 @@ fun Section(
                 navigationIcon = {
                     NavigationIcon(
                         icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "stringResource(Res.string.back)",
+                        contentDescription = stringResource(Res.string.back),
                         onClick = onBackPressed,
                     )
                 },

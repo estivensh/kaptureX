@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import camerakmp.sample.composeapp.generated.resources.Res
 import extensions.ImageFile
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -86,7 +87,7 @@ private fun SwitchButton(
     ) {
         Image(
             modifier = Modifier.size(24.dp),
-            painter = painterResource("refresh.xml"),
+            painter = painterResource(Res.drawable.refresh),
             colorFilter = ColorFilter.tint(Color.White),
             contentDescription = "stringResource(Res.string.refresh)"
         )

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import camerakmp.sample.composeapp.generated.resources.Res
 import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
@@ -23,6 +24,7 @@ import coil.request.videoFrameMillis
 import extensions.ImageFile
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -46,7 +48,7 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
             .decoderFactory(VideoFrameDecoder.Factory())
             .videoFrameMillis(1)
             .build(),
-        contentDescription = "stringResource(Res.string.gallery)"
+        contentDescription = stringResource(Res.string.gallery)
     )
 
     LaunchedEffect(lastPicture) {
