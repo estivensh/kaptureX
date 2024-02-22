@@ -1,6 +1,3 @@
-import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -32,7 +29,7 @@ kotlin {
             isStatic = false
         }
     }
-    
+
     sourceSets {
         all {
             languageSettings {
@@ -50,12 +47,11 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
             implementation(libs.precompose)
             implementation(libs.accompanist.permissions)
             implementation(projects.kaptureX)
-            implementation("io.github.aakira:napier:2.7.1")
+            implementation(libs.napier)
         }
     }
 }

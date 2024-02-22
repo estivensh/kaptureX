@@ -84,6 +84,7 @@ actual class CameraState {
             )
 
     actual companion object {
+        private val TAG = this::class.simpleName
         actual val INITIAL_ZOOM_VALUE: Float = 1F
         actual val INITIAL_EXPOSURE_VALUE: Int = 0
     }
@@ -94,9 +95,9 @@ actual class CameraState {
             )
 
     actual fun startZoom() {
-        val zoom = controller?.activeFormat
-        minZoom = zoom?.videoMinZoomFactorForCenterStage?.toFloat() ?: INITIAL_ZOOM_VALUE
-        maxZoom = zoom?.videoMaxZoomFactor?.toFloat() ?: INITIAL_ZOOM_VALUE
+        val zoom = controller.activeFormat
+        minZoom = zoom.videoMinZoomFactorForCenterStage.toFloat() ?: INITIAL_ZOOM_VALUE
+        maxZoom = zoom.videoMaxZoomFactor.toFloat() ?: INITIAL_ZOOM_VALUE
     }
 
     internal actual var scaleType: ScaleType = ScaleType.Fill
@@ -110,7 +111,8 @@ actual class CameraState {
                         field = value
                     }
                 }
-
+                isRecording -> Log.e(TAG, "Device is recording, switch camera is unavailable")
+                else -> Log.e(TAG, "Device does not have ${value.selector} camera")
             }
         }
     actual var isRecording: Boolean by mutableStateOf(false)

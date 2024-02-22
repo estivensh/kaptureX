@@ -20,6 +20,7 @@ coil = "2.5.0"
 accompanist = "0.32.0"
 precompose = "1.6.0-beta02"
 org-jetbrains-kotlin-jvm = "1.9.22"
+napier = "2.7.1"
 
 [libraries]
 camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camera" }
@@ -44,6 +45,7 @@ precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

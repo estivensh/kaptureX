@@ -7,7 +7,6 @@ import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -34,6 +33,8 @@ import androidx.core.util.Consumer
 import extensions.ImageFile
 import extensions.compatMainExecutor
 import extensions.isImageAnalysisSupported
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import java.io.File
 import java.util.UUID
 
@@ -45,6 +46,7 @@ actual class CameraState(private val context: Context) {
     private var recordController: Recording? = null
 
     init {
+        Napier.base(DebugAntilog())
         controller.initializationFuture.addListener(
             {
                 resetCamera()
@@ -94,12 +96,11 @@ actual class CameraState(private val context: Context) {
         set(value) {
             when {
                 value == field -> {
-                    Log.e(TAG, "Device is recording, switch camera is unavailable")
-                    Unit
+                    Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
                 }
 
                 !isRecording && hasCamera(value) -> {
-                    Log.e(TAG, "Device is recording, switch camera is unavailable")
+                    Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
                     if (controller.cameraSelector != value.selector) {
                         controller.cameraSelector = value.selector
                         field = value
@@ -107,8 +108,8 @@ actual class CameraState(private val context: Context) {
                     }
                 }
 
-                isRecording -> Log.e(TAG, "Device is recording, switch camera is unavailable")
-                else -> Log.e(TAG, "Device does not have ${value.selector} camera")
+                isRecording -> Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                else -> Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
             }
         }
     actual var isRecording: Boolean by mutableStateOf(controller.isRecording)
@@ -143,7 +144,7 @@ actual class CameraState(private val context: Context) {
             }
             controller.setEnabledUseCases(useCases)
         } catch (exception: IllegalStateException) {
-            Log.e(TAG, "Use case Image Analysis not supported")
+            Napier.e(tag = TAG) { "Use case Image Analysis not supported" }
             controller.setEnabledUseCases(captureMode.value)
         }
     }
@@ -166,7 +167,7 @@ actual class CameraState(private val context: Context) {
     internal actual var isImageAnalysisEnabled: Boolean = isImageAnalysisSupported
         set(value) {
             if (!isImageAnalysisSupported) {
-                Log.e(TAG, "Image analysis is not supported")
+                Napier.e(tag = TAG) { "Image analysis is not supported" }
                 return
             }
             field = value
@@ -258,6 +259,7 @@ actual class CameraState(private val context: Context) {
                 mainExecutor,
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                        Napier.i(tag = TAG) { "Capture photo - ${outputFileResults.savedUri}" }
                         onResult(
                             ImageCaptureResult.Success(
                                 ImageFile(
@@ -269,12 +271,14 @@ actual class CameraState(private val context: Context) {
                     }
 
                     override fun onError(exception: ImageCaptureException) {
+                        Napier.i(tag = TAG) { "Capture photo - ${exception.message}" }
                         onResult(ImageCaptureResult.Error(exception))
                     }
 
                 }
             )
         } catch (exception: Exception) {
+            Napier.i(tag = TAG) { "Capture photo - ${exception.message}" }
             onResult(ImageCaptureResult.Error(exception))
         }
     }
@@ -284,11 +288,11 @@ actual class CameraState(private val context: Context) {
         onRecordBuild: () -> Recording
     ) {
         try {
-            Log.i(TAG, "Prepare recording")
+            Napier.i(tag = TAG) { "Prepare recording" }
             isRecording = true
             recordController = onRecordBuild()
         } catch (exception: Exception) {
-            Log.i(TAG, "Fail to record! - $exception")
+            Napier.i(tag = TAG) { "Fail to record! - $exception" }
             isRecording = false
             onError(
                 VideoCaptureResult.Error(
@@ -303,7 +307,8 @@ actual class CameraState(private val context: Context) {
     @SuppressLint("MissingPermission")
     actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) =
         prepareRecording(onResult) {
-            Log.i(TAG, "Start recording")
+            //Log.i(TAG, "Start recording")
+            Napier.i(tag = TAG) { "Start recording" }
             val relativePath = "Camposer"
             val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}$relativePath"
             val currentFileName = "${System.currentTimeMillis()}-${UUID.randomUUID()}"
@@ -332,7 +337,7 @@ actual class CameraState(private val context: Context) {
     private fun getConsumerEvent(
         onResult: (VideoCaptureResult) -> Unit
     ): Consumer<VideoRecordEvent> = Consumer<VideoRecordEvent> { event ->
-        Log.i(TAG, "Video Recorder Event - $event")
+        Napier.i(tag = TAG) { "Video Recorder Event - $event" }
         if (event is VideoRecordEvent.Finalize) {
             isRecording = false
             val result = when {

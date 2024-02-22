@@ -32,12 +32,12 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            // Camera2
             implementation(libs.camera.camera2)
             implementation(libs.camera.view)
             implementation(libs.camera.lifecycle)
             implementation(libs.camera.extensions)
             implementation(libs.accompanist.permissions)
+            implementation(libs.napier)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
