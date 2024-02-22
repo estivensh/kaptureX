@@ -1,7 +1,7 @@
 rootProject.name = "CameraKMP"
 includeBuild("build-logic")
 include(":sample:composeApp")
-include(":camera")
+include(":kaptureX")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

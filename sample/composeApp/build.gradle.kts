@@ -54,7 +54,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.precompose)
             implementation(libs.accompanist.permissions)
-            implementation(projects.camera)
+            implementation(projects.kaptureX)
             implementation("io.github.aakira:napier:2.7.1")
         }
     }
