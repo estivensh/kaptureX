@@ -23,7 +23,7 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
-            isStatic = true
+            isStatic = false
         }
     }
 
@@ -45,6 +45,9 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+        }
+        iosMain.dependencies {
+            implementation(libs.napier)
         }
     }
 }

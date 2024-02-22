@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import extensions.ImageFile
+import io.github.aakira.napier.Napier
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.autoreleasepool
@@ -52,7 +53,6 @@ import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
 actual class CameraState {
-
 
     private var captureSession: AVCaptureSession
     actual val controller: AVCaptureDevice =
@@ -107,12 +107,12 @@ actual class CameraState {
                 value == field -> Unit
                 !isRecording && hasCamera(value) -> {
                     if (controller.position != value.selector) {
-                        //controller.setposi = value.selector
                         field = value
                     }
                 }
-                isRecording -> Log.e(TAG, "Device is recording, switch camera is unavailable")
-                else -> Log.e(TAG, "Device does not have ${value.selector} camera")
+
+                isRecording -> Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                else -> Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
             }
         }
     actual var isRecording: Boolean by mutableStateOf(false)
