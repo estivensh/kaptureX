@@ -3,4 +3,4 @@
             " the future."
 )
 @Retention(AnnotationRetention.BINARY)
-annotation class ExperimentalCameraView
+annotation class ExperimentalCameraPreview

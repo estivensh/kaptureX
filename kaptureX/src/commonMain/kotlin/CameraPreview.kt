@@ -11,7 +11,7 @@ import state.ImageTargetSize
 import state.ScaleType
 import state.rememberCameraState
 
-@ExperimentalCameraView
+@ExperimentalCameraPreview
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
