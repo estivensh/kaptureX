@@ -17,6 +17,8 @@ import kotlinx.cinterop.autoreleasepool
 import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.AVCaptureDeviceDiscoverySession
 import platform.AVFoundation.AVCaptureDeviceInput
+import platform.AVFoundation.AVCaptureDevicePositionBack
+import platform.AVFoundation.AVCaptureDevicePositionFront
 import platform.AVFoundation.AVCaptureDevicePositionUnspecified
 import platform.AVFoundation.AVCaptureDeviceTypeBuiltInWideAngleCamera
 import platform.AVFoundation.AVCaptureFileOutput
@@ -28,7 +30,9 @@ import platform.AVFoundation.AVCapturePhotoCaptureDelegateProtocol
 import platform.AVFoundation.AVCapturePhotoOutput
 import platform.AVFoundation.AVCapturePhotoSettings
 import platform.AVFoundation.AVCaptureSession
+import platform.AVFoundation.AVCaptureVideoPreviewLayer
 import platform.AVFoundation.AVCaptureVideoStabilizationModeAuto
+import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVMediaTypeAudio
 import platform.AVFoundation.AVMediaTypeVideo
 import platform.AVFoundation.exposureTargetOffset
@@ -49,12 +53,13 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.fileURLWithPathComponents
 import platform.Foundation.pathComponents
+import platform.UIKit.UIScreen
 import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
 actual class CameraState {
 
-    private var captureSession: AVCaptureSession
+    var captureSession: AVCaptureSession
     actual val controller: AVCaptureDevice =
         AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
     val photoOutput = AVCapturePhotoOutput()
@@ -63,8 +68,48 @@ actual class CameraState {
 
     init {
         captureSession = AVCaptureSession()
-        val input =
-            AVCaptureDeviceInput.deviceInputWithDevice(controller, null)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun initCamera(
+        currentCamSelector: CamSelector,
+        currentFlashMode: FlashMode,
+        videoPreviewLayer: AVCaptureVideoPreviewLayer,
+        onInit: (AVCaptureSession) -> Unit
+    ) {
+        val avCaptureDevices =
+            AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as List<AVCaptureDevice>
+
+        val captureDevice = when (currentCamSelector) {
+            CamSelector.Front -> avCaptureDevices
+                .firstOrNull { it.position == AVCaptureDevicePositionFront }
+
+            CamSelector.Back -> avCaptureDevices
+                .firstOrNull { it.position == AVCaptureDevicePositionBack }
+        }
+
+        val inputs = captureSession.inputs as List<AVCaptureInput>
+        inputs.forEach { captureSession.removeInput(it) }
+
+        val input = captureDevice?.let { AVCaptureDeviceInput.deviceInputWithDevice(it, null) }
+        if (input != null && captureSession.canAddInput(input)) {
+            captureSession.addInput(input)
+        }
+
+        // Configurar el flash
+        captureDevice?.lockForConfiguration(null)
+        captureDevice?.setFlashMode(currentFlashMode.mode)
+        captureDevice?.unlockForConfiguration()
+
+        // Configurar la captura de fotos
+        captureSession.addOutput(photoOutput)
+
+        // Configurar la capa de vista previa del video
+        videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        videoPreviewLayer.frame = UIScreen.mainScreen.bounds
+
+        // Iniciar la sesión de captura
+        onInit(captureSession)
     }
 
     internal actual var flashMode: FlashMode
@@ -187,7 +232,6 @@ actual class CameraState {
         this.isFocusOnTapEnabled = isFocusOnTapEnabled
         this.flashMode = flashMode
         this.enableTorch = enableTorch
-        //this.isFocusOnTapSupported = meteringPoint.isFocusMeteringSupported
         this.imageCaptureMode = imageCaptureMode
         //setExposureCompensation(exposureCompensation)
         //setZoomRatio(zoomRatio)
@@ -285,12 +329,10 @@ actual class CameraState {
     }
 
     actual fun pauseRecording() {
-        //movieFileOutput.resu
+        movieFileOutput.stopRecording()
     }
 
-    actual fun resumeRecording() {
-
-    }
+    actual fun resumeRecording() {}
 
 
     actual fun toggleRecording(onResult: (VideoCaptureResult) -> Unit) {
