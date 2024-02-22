@@ -33,9 +33,11 @@ import platform.AVFoundation.AVMediaTypeVideo
 import platform.AVFoundation.exposureTargetOffset
 import platform.AVFoundation.fileDataRepresentation
 import platform.AVFoundation.flashMode
+import platform.AVFoundation.focusPointOfInterestSupported
 import platform.AVFoundation.hasFlash
 import platform.AVFoundation.isTorchActive
 import platform.AVFoundation.position
+import platform.AVFoundation.setAutomaticallyAdjustsFaceDrivenAutoFocusEnabled
 import platform.AVFoundation.setFlashMode
 import platform.AVFoundation.videoMinZoomFactorForCenterStage
 import platform.Foundation.NSDocumentDirectory
@@ -49,7 +51,7 @@ import platform.Foundation.pathComponents
 import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
-actual class CameraState() {
+actual class CameraState {
 
 
     private var captureSession: AVCaptureSession
@@ -168,6 +170,7 @@ actual class CameraState() {
         scaleType: ScaleType,
         imageCaptureTargetSize: ImageTargetSize?,
         isImageAnalysisEnabled: Boolean,
+        isFocusOnTapEnabled: Boolean,
         flashMode: FlashMode,
         zoomRatio: Float,
         imageCaptureMode: ImageCaptureMode,
@@ -179,14 +182,11 @@ actual class CameraState() {
         this.scaleType = scaleType
         this.imageCaptureTargetSize = imageCaptureTargetSize
         this.isImageAnalysisEnabled = isImageAnalysisEnabled
-        /*this.imageAnalyzer = imageAnalyzer?.analyzer
-        this.implementationMode = implementationMode
-        this.isFocusOnTapEnabled = isFocusOnTapEnabled*/
+        this.isFocusOnTapEnabled = isFocusOnTapEnabled
         this.flashMode = flashMode
         this.enableTorch = enableTorch
         //this.isFocusOnTapSupported = meteringPoint.isFocusMeteringSupported
         this.imageCaptureMode = imageCaptureMode
-        //this.videoQualitySelector = videoQualitySelector
         //setExposureCompensation(exposureCompensation)
         //setZoomRatio(zoomRatio)
     }
@@ -325,6 +325,12 @@ actual class CameraState() {
 
         captureSession.commitConfiguration()
     }
+
+    internal actual var isFocusOnTapEnabled: Boolean
+        get() = controller.focusPointOfInterestSupported
+        set(value) {
+            controller.setAutomaticallyAdjustsFaceDrivenAutoFocusEnabled(value)
+        }
 
 
 }

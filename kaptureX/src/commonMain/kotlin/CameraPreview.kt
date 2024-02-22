@@ -2,6 +2,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import focus.SquareCornerFocus
 import kotlinx.coroutines.delay
+import permissions.SharedImage
 import state.CamSelector
 import state.CameraState
 import state.CaptureMode
@@ -25,22 +26,19 @@ fun CameraPreview(
     enableTorch: Boolean = cameraState.enableTorch,
     exposureCompensation: Int = cameraState.initialExposure,
     zoomRatio: Float = 1F,
-    //imageAnalyzer: ImageAnalyzer? = null,
-    //implementationMode: ImplementationMode = cameraState.implementationMode,
     isImageAnalysisEnabled: Boolean = cameraState.isImageAnalysisEnabled,
-    //isFocusOnTapEnabled: Boolean = cameraState.isFocusOnTapEnabled,
+    isFocusOnTapEnabled: Boolean = cameraState.isFocusOnTapEnabled,
     isPinchToZoomEnabled: Boolean = cameraState.isZoomSupported,
-    //videoQualitySelector: QualitySelector = cameraState.videoQualitySelector,
     onPreviewStreamChanged: () -> Unit = {},
-    /*  onSwitchToFront: @Composable (Bitmap) -> Unit = {},
-      onSwitchToBack: @Composable (Bitmap) -> Unit = {},*/
+    onSwitchToFront: @Composable (SharedImage) -> Unit = {},
+    onSwitchToBack: @Composable (SharedImage) -> Unit = {},
     onFocus: suspend (onComplete: () -> Unit) -> Unit = { onComplete ->
         delay(1000L)
         onComplete()
     },
     onZoomRatioChanged: (Float) -> Unit = {},
     focusTapContent: @Composable () -> Unit = { SquareCornerFocus() },
-    content: @Composable () -> Unit = {},
+    content: @Composable () -> Unit = { CameraPreviewDefaults.Camera() },
 ) {
     CameraPreviewImpl(
         modifier = modifier,
@@ -54,18 +52,15 @@ fun CameraPreview(
         scaleType = scaleType,
         enableTorch = enableTorch,
         zoomRatio = zoomRatio,
-        //imageAnalyzer = imageAnalyzer,
         isImageAnalysisEnabled = isImageAnalysisEnabled,
-        // implementationMode = implementationMode,
-        //isFocusOnTapEnabled = isFocusOnTapEnabled,
+        isFocusOnTapEnabled = isFocusOnTapEnabled,
         isPinchToZoomEnabled = isPinchToZoomEnabled,
-        //videoQualitySelector = videoQualitySelector,
         onZoomRatioChanged = onZoomRatioChanged,
         focusTapContent = focusTapContent,
         onFocus = onFocus,
         onPreviewStreamChanged = onPreviewStreamChanged,
-        /*onSwipeToFront = onSwitchToFront,
-        onSwipeToBack = onSwitchToBack,*/
+        onSwipeToFront = onSwitchToFront,
+        onSwipeToBack = onSwitchToBack,
         content = content
     )
 }
@@ -82,16 +77,15 @@ expect fun CameraPreviewImpl(
     scaleType: ScaleType,
     enableTorch: Boolean,
     zoomRatio: Float,
-    //implementationMode: ImplementationMode,
-    //imageAnalyzer: ImageAnalyzer?,
     exposureCompensation: Int,
     isImageAnalysisEnabled: Boolean,
-    //isFocusOnTapEnabled: Boolean,
+    isFocusOnTapEnabled: Boolean,
     isPinchToZoomEnabled: Boolean,
-    //videoQualitySelector: QualitySelector,
     onZoomRatioChanged: (Float) -> Unit,
     onPreviewStreamChanged: () -> Unit,
     onFocus: suspend (() -> Unit) -> Unit,
+    onSwipeToFront: @Composable (SharedImage) -> Unit,
+    onSwipeToBack: @Composable (SharedImage) -> Unit,
     focusTapContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 )

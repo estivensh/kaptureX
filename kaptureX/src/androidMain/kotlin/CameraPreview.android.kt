@@ -1,6 +1,7 @@
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.view.ViewGroup
+import androidx.camera.core.CameraSelector
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import extensions.clamped
 import extensions.onCameraTouchEvent
 import focus.FocusTap
+import permissions.SharedImage
 import state.CamSelector
 import state.CameraState
 import state.CaptureMode
@@ -40,16 +42,15 @@ actual fun CameraPreviewImpl(
     scaleType: ScaleType,
     enableTorch: Boolean,
     zoomRatio: Float,
-    //implementationMode: ImplementationMode,
-    //imageAnalyzer: ImageAnalyzer?,
     exposureCompensation: Int,
     isImageAnalysisEnabled: Boolean,
-   // isFocusOnTapEnabled: Boolean,
+    isFocusOnTapEnabled: Boolean,
     isPinchToZoomEnabled: Boolean,
-    //videoQualitySelector: QualitySelector,
     onZoomRatioChanged: (Float) -> Unit,
     onPreviewStreamChanged: () -> Unit,
     onFocus: suspend (() -> Unit) -> Unit,
+    onSwipeToFront: @Composable (SharedImage) -> Unit,
+    onSwipeToBack: @Composable (SharedImage) -> Unit,
     focusTapContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -107,14 +108,11 @@ actual fun CameraPreviewImpl(
                         imageCaptureTargetSize = imageCaptureTargetSize,
                         scaleType = scaleType,
                         isImageAnalysisEnabled = isImageAnalysisEnabled,
-                        //imageAnalyzer = imageAnalyzer,
-                        //implementationMode = implementationMode,
-                        //isFocusOnTapEnabled = isFocusOnTapEnabled,
+                        isFocusOnTapEnabled = isFocusOnTapEnabled,
                         flashMode = flashMode,
                         enableTorch = enableTorch,
                         zoomRatio = zoomRatio,
                         imageCaptureMode = imageCaptureMode,
-                        //videoQualitySelector = videoQualitySelector,
                         exposureCompensation = exposureCompensation,
                     )
                 }
@@ -130,6 +128,8 @@ actual fun CameraPreviewImpl(
     if (isCameraIdle) {
         latestBitmap?.let {
             when (camSelector.selector.lensFacing) {
+                CameraSelector.LENS_FACING_FRONT -> onSwipeToFront(SharedImage(it))
+                CameraSelector.LENS_FACING_BACK -> onSwipeToBack(SharedImage(it))
                 else -> Unit
             }
             LaunchedEffect(latestBitmap) {

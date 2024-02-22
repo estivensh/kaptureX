@@ -1,3 +1,4 @@
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -168,6 +169,7 @@ fun CameraScreen(
 }
 
 
+@OptIn(ExperimentalCameraPreview::class)
 @Composable
 fun CameraSection(
     cameraState: CameraState,
@@ -197,12 +199,19 @@ fun CameraSection(
         flashMode = flashMode,
         enableTorch = enableTorch,
         zoomRatio = zoomRatio,
-        //imageAnalyzer = ImageAnalyzer(),
         isPinchToZoomEnabled = usePinchToZoom,
         onZoomRatioChanged = {
             zoomHasChanged = true
             zoomRatio = it
         },
+        onSwitchToFront = { bitmap ->
+            /*Cloudy(radius = 20) { bitmap.toImageBitmap()
+                ?.let { Image(it, contentDescription = null) } }*/
+        },
+        onSwitchToBack = { bitmap ->
+            /*Cloudy(radius = 20) { bitmap.toImageBitmap()
+                ?.let { Image(it, contentDescription = null) } }*/
+        }
     ) {
         BlinkPictureBox(lastPicture, cameraOption == CameraOption.Video)
         CameraInnerContent(

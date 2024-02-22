@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -21,6 +22,7 @@ import kotlinx.coroutines.withContext
 import permissions.PermissionCallback
 import permissions.PermissionStatus
 import permissions.PermissionType
+import permissions.SharedImage
 import permissions.createPermissionsManager
 import permissions.rememberCameraManager
 import permissions.rememberGalleryManager
@@ -53,6 +55,7 @@ import platform.Photos.PHAssetCollectionChangeRequest
 import platform.Photos.PHPhotoLibrary
 import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
+import platform.UIKit.UIImage
 import platform.UIKit.UIScreen
 import platform.UIKit.UIView
 import platform.darwin.NSObject
@@ -79,16 +82,15 @@ actual fun CameraPreviewImpl(
     scaleType: ScaleType,
     enableTorch: Boolean,
     zoomRatio: Float,
-    //implementationMode: ImplementationMode,
-    //imageAnalyzer: ImageAnalyzer?,
     exposureCompensation: Int,
     isImageAnalysisEnabled: Boolean,
-    //isFocusOnTapEnabled: Boolean,
+    isFocusOnTapEnabled: Boolean,
     isPinchToZoomEnabled: Boolean,
-    //videoQualitySelector: QualitySelector,
     onZoomRatioChanged: (Float) -> Unit,
     onPreviewStreamChanged: () -> Unit,
     onFocus: suspend (() -> Unit) -> Unit,
+    onSwipeToFront: @Composable (SharedImage) -> Unit,
+    onSwipeToBack: @Composable (SharedImage) -> Unit,
     focusTapContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
@@ -98,6 +100,9 @@ actual fun CameraPreviewImpl(
     var tapOffset by remember { mutableStateOf(Offset.Zero) }
     var currentCamSelector by remember { mutableStateOf(camSelector) }
     var currentFlashMode by remember { mutableStateOf(flashMode) }
+    val isCameraIdle by rememberUpdatedState(!cameraState.isStreaming)
+    var latestBitmap by remember { mutableStateOf<UIImage?>(null) }
+    val cameraIsInitialized by rememberUpdatedState(cameraState.isInitialized)
 
     LaunchedEffect(camSelector) { currentCamSelector = camSelector }
     LaunchedEffect(flashMode) { currentFlashMode = flashMode }
@@ -152,7 +157,24 @@ actual fun CameraPreviewImpl(
             videoPreviewLayer.setFrame(rect)
             CATransaction.commit()
         },
-        modifier = modifier
+        modifier = modifier,
+        update = {
+            if (cameraIsInitialized) {
+                cameraState.update(
+                    camSelector = camSelector,
+                    captureMode = captureMode,
+                    imageCaptureTargetSize = imageCaptureTargetSize,
+                    scaleType = scaleType,
+                    isImageAnalysisEnabled = isImageAnalysisEnabled,
+                    isFocusOnTapEnabled = isFocusOnTapEnabled,
+                    flashMode = flashMode,
+                    enableTorch = enableTorch,
+                    zoomRatio = zoomRatio,
+                    imageCaptureMode = imageCaptureMode,
+                    exposureCompensation = exposureCompensation,
+                )
+            }
+        }
     )
 
     FocusTap(
@@ -160,8 +182,22 @@ actual fun CameraPreviewImpl(
         onFocus = { onFocus { tapOffset = Offset.Zero } },
     ) { focusTapContent() }
 
+    if (isCameraIdle) {
+        latestBitmap?.let {
+            when (camSelector.selector) {
+                AVCaptureDevicePositionFront -> onSwipeToFront(SharedImage(it))
+                AVCaptureDevicePositionBack -> onSwipeToBack(SharedImage(it))
+                else -> Unit
+            }
+            LaunchedEffect(latestBitmap) {
+                onPreviewStreamChanged()
+                if (latestBitmap != null) onZoomRatioChanged(cameraState.minZoom)
+            }
+        }
+    }
+
     content()
-    val coroutineScope = rememberCoroutineScope()
+    /*val coroutineScope = rememberCoroutineScope()
     var launchCamera by remember { mutableStateOf(value = false) }
     var launchGallery by remember { mutableStateOf(value = false) }
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -229,5 +265,5 @@ actual fun CameraPreviewImpl(
         }
     ) {
         Text("Permisos")
-    }
+    }*/
 }

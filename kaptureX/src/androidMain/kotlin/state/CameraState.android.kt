@@ -30,12 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.util.Consumer
 import extensions.ImageFile
 import extensions.compatMainExecutor
 import extensions.isImageAnalysisSupported
 import java.io.File
 import java.util.UUID
-import androidx.core.util.Consumer
 
 actual class CameraState(private val context: Context) {
 
@@ -210,6 +210,7 @@ actual class CameraState(private val context: Context) {
         scaleType: ScaleType,
         imageCaptureTargetSize: ImageTargetSize?,
         isImageAnalysisEnabled: Boolean,
+        isFocusOnTapEnabled: Boolean,
         flashMode: FlashMode,
         zoomRatio: Float,
         imageCaptureMode: ImageCaptureMode,
@@ -221,9 +222,7 @@ actual class CameraState(private val context: Context) {
         this.scaleType = scaleType
         this.imageCaptureTargetSize = imageCaptureTargetSize
         this.isImageAnalysisEnabled = isImageAnalysisEnabled
-        //this.imageAnalyzer = imageAnalyzer?.analyzer
-        /*this.implementationMode = implementationMode
-        this.isFocusOnTapEnabled = isFocusOnTapEnabled*/
+        this.isFocusOnTapEnabled = isFocusOnTapEnabled
         this.flashMode = flashMode
         this.enableTorch = enableTorch
         //this.isFocusOnTapSupported = meteringPoint.isFocusMeteringSupported
@@ -288,12 +287,12 @@ actual class CameraState(private val context: Context) {
             Log.i(TAG, "Prepare recording")
             isRecording = true
             recordController = onRecordBuild()
-        } catch (exception: Exception){
+        } catch (exception: Exception) {
             Log.i(TAG, "Fail to record! - $exception")
             isRecording = false
             onError(
                 VideoCaptureResult.Error(
-                    if (!controller.isVideoCaptureEnabled){
+                    if (!controller.isVideoCaptureEnabled) {
                         "Video capture is not enabled, please set captureMode as CaptureMode.Video - ${exception.message}"
                     } else "${exception.message}", exception
                 )
@@ -302,8 +301,8 @@ actual class CameraState(private val context: Context) {
     }
 
     @SuppressLint("MissingPermission")
-    actual fun startRecording(onResult: (VideoCaptureResult) -> Unit)  =
-        prepareRecording(onResult){
+    actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) =
+        prepareRecording(onResult) {
             Log.i(TAG, "Start recording")
             val relativePath = "Camposer"
             val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}$relativePath"
@@ -343,6 +342,7 @@ actual class CameraState(private val context: Context) {
                         context.contentResolver
                     )
                 )
+
                 else -> VideoCaptureResult.Error(
                     "Video error code: ${event.error}",
                     event.cause
@@ -368,11 +368,17 @@ actual class CameraState(private val context: Context) {
     }
 
     actual fun toggleRecording(onResult: (VideoCaptureResult) -> Unit) {
-        when(isRecording){
+        when (isRecording) {
             true -> stopRecording()
             false -> startRecording(onResult)
         }
     }
+
+    internal actual var isFocusOnTapEnabled: Boolean
+        get() = controller.isTapToFocusEnabled
+        set(value) {
+            controller.isTapToFocusEnabled = value
+        }
 
 }
 

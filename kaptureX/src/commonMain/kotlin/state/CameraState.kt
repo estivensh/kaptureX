@@ -20,6 +20,7 @@ expect class CameraState {
     internal var enableTorch: Boolean
     internal var isImageAnalysisEnabled: Boolean
         private set
+    internal var isFocusOnTapEnabled: Boolean
     val initialExposure: Int
     internal var imageCaptureTargetSize: ImageTargetSize?
     var isImageAnalysisSupported: Boolean
@@ -45,15 +46,12 @@ expect class CameraState {
         scaleType: ScaleType,
         imageCaptureTargetSize: ImageTargetSize?,
         isImageAnalysisEnabled: Boolean,
-        //imageAnalyzer: ImageAnalyzer?,
-        //implementationMode: ImplementationMode,
-        //isFocusOnTapEnabled: Boolean,
+        isFocusOnTapEnabled: Boolean,
         flashMode: FlashMode,
         zoomRatio: Float,
         imageCaptureMode: ImageCaptureMode,
         enableTorch: Boolean,
         exposureCompensation: Int,
-        // videoQualitySelector: QualitySelector,
     )
 
     companion object {
