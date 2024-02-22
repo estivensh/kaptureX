@@ -3,7 +3,7 @@ package extensions
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
-import io.github.estivensh4.camerakmp.R
+import io.github.estivensh4.kaptureX.R
 import java.io.File
 import java.util.Objects
 

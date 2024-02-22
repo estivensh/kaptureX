@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     `kotlin-dsl`
 }
@@ -9,7 +12,15 @@ repositories {
     gradlePluginPortal()
 }
 
+kotlin {
+    jvmToolchain(11)
+}
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
 
 dependencies {
     api(libs.kotlinGradlePlugin)
