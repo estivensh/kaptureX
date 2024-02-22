@@ -38,17 +38,13 @@ import platform.AVFoundation.isTorchActive
 import platform.AVFoundation.position
 import platform.AVFoundation.setFlashMode
 import platform.AVFoundation.videoMinZoomFactorForCenterStage
-import platform.Foundation.NSArray
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSError
 import platform.Foundation.NSFileManager
-import platform.Foundation.NSSearchPathDirectory
-import platform.Foundation.NSSearchPathDomainMask
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.fileURLWithPathComponents
-import platform.Foundation.lastPathComponent
 import platform.Foundation.pathComponents
 import platform.darwin.NSObject
 
@@ -56,7 +52,7 @@ import platform.darwin.NSObject
 actual class CameraState() {
 
 
-    private lateinit var captureSession: AVCaptureSession
+    private var captureSession: AVCaptureSession
     actual val controller: AVCaptureDevice =
         AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
     val photoOutput = AVCapturePhotoOutput()
@@ -66,7 +62,7 @@ actual class CameraState() {
     init {
         captureSession = AVCaptureSession()
         val input =
-            AVCaptureDeviceInput.deviceInputWithDevice(controller ?: AVCaptureDevice(), null)
+            AVCaptureDeviceInput.deviceInputWithDevice(controller, null)
     }
 
     internal actual var flashMode: FlashMode
@@ -77,12 +73,12 @@ actual class CameraState() {
             }
         }
 
-    actual var hasFlashUnit: Boolean by mutableStateOf(controller?.hasFlash ?: true)
+    actual var hasFlashUnit: Boolean by mutableStateOf(controller.hasFlash)
     actual val isZoomSupported: Boolean
             by derivedStateOf { maxZoom != 1F }
     actual var maxZoom: Float
             by mutableFloatStateOf(
-                controller?.activeFormat?.videoMaxZoomFactor?.toFloat() ?: INITIAL_ZOOM_VALUE
+                controller.activeFormat.videoMaxZoomFactor.toFloat()
             )
 
     actual companion object {
@@ -92,8 +88,7 @@ actual class CameraState() {
 
     actual var minZoom: Float
             by mutableFloatStateOf(
-                controller?.activeFormat?.videoMinZoomFactorForCenterStage?.toFloat()
-                    ?: INITIAL_ZOOM_VALUE
+                controller.activeFormat.videoMinZoomFactorForCenterStage.toFloat()
             )
 
     actual fun startZoom() {
@@ -156,10 +151,14 @@ actual class CameraState() {
 
     internal actual var enableTorch: Boolean
         get() = controller.hasFlash && controller.isTorchActive()
-        set(value) {}
+        set(value) {
+
+        }
     internal actual var imageCaptureTargetSize: ImageTargetSize?
         get() = null
-        set(value) {}
+        set(value) {
+
+        }
     actual val initialExposure: Int
         get() = controller.exposureTargetOffset.toInt()
 
@@ -212,15 +211,18 @@ actual class CameraState() {
                         onResult(ImageCaptureResult.Error(Exception(error.localizedDescription())))
                     }
                 }
-            })
+            }
+        )
     }
 
+    @Suppress("UNCHECKED_CAST")
     @OptIn(BetaInteropApi::class)
     actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) {
         autoreleasepool {
             captureSession = AVCaptureSession()
 
-            val camera = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
+            val camera =
+                AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
             setupVideoRecording(camera)
 
             captureSession.startRunning()
@@ -231,31 +233,45 @@ actual class CameraState() {
                 NSDocumentDirectory, NSUserDomainMask, true
             ).firstOrNull()
             outputFileURL = NSURL.fileURLWithPath("$documentsPath/output.mov")
-            val paths = NSFileManager.defaultManager().URLsForDirectory(NSDocumentDirectory, NSUserDomainMask) as List<NSURL>
+            val paths = NSFileManager.defaultManager()
+                .URLsForDirectory(NSDocumentDirectory, NSUserDomainMask) as List<NSURL>
             val pathComponents = paths[0].pathComponents ?: emptyList<String>()
             val newPathComponents = pathComponents + "output.mov"
             val fileURL = NSURL.fileURLWithPathComponents(newPathComponents as List<*>)
 
-            NSFileManager.defaultManager.removeItemAtURL(fileURL ?: NSURL(), error =null)
+            NSFileManager.defaultManager.removeItemAtURL(fileURL ?: NSURL(), error = null)
 
             // Iniciar la grabación de video
-            movieFileOutput.startRecordingToOutputFileURL(fileURL ?: NSURL(), recordingDelegate = object : NSObject(),
-                AVCaptureFileOutputRecordingDelegateProtocol {
-                override fun captureOutput(
-                    output: AVCaptureFileOutput,
-                    didFinishRecordingToOutputFileAtURL: NSURL,
-                    fromConnections: List<*>,
-                    error: NSError?
-                ) {
-                    if (error == null) {
-                        println("Estado Success: ${didFinishRecordingToOutputFileAtURL.absoluteString}")
-                        onResult(VideoCaptureResult.Success(ImageFile(didFinishRecordingToOutputFileAtURL.absoluteString.orEmpty())))
-                    } else {
-                        println("Estado Error: ${error.localizedDescription()} ${error.code} ${error.domain} ")
-                        onResult(VideoCaptureResult.Error(message = error.localizedDescription, throwable = null))
+            movieFileOutput.startRecordingToOutputFileURL(
+                fileURL ?: NSURL(),
+                recordingDelegate = object : NSObject(),
+                    AVCaptureFileOutputRecordingDelegateProtocol {
+                    override fun captureOutput(
+                        output: AVCaptureFileOutput,
+                        didFinishRecordingToOutputFileAtURL: NSURL,
+                        fromConnections: List<*>,
+                        error: NSError?
+                    ) {
+                        if (error == null) {
+                            println("Estado Success: ${didFinishRecordingToOutputFileAtURL.absoluteString}")
+                            onResult(
+                                VideoCaptureResult.Success(
+                                    ImageFile(
+                                        didFinishRecordingToOutputFileAtURL.absoluteString.orEmpty()
+                                    )
+                                )
+                            )
+                        } else {
+                            println("Estado Error: ${error.localizedDescription()} ${error.code} ${error.domain} ")
+                            onResult(
+                                VideoCaptureResult.Error(
+                                    message = error.localizedDescription,
+                                    throwable = null
+                                )
+                            )
+                        }
                     }
-                }
-            })
+                })
             isRecording = true
         }
     }
@@ -289,8 +305,10 @@ actual class CameraState() {
             captureSession.addInput(videoInput)
         }
 
-        val audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio) ?: AVCaptureDevice()
-        val audioInput = AVCaptureDeviceInput.deviceInputWithDevice(audioDevice, null) ?: AVCaptureDeviceInput()
+        val audioDevice =
+            AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio) ?: AVCaptureDevice()
+        val audioInput =
+            AVCaptureDeviceInput.deviceInputWithDevice(audioDevice, null) ?: AVCaptureDeviceInput()
         if (captureSession.canAddInput(audioInput)) {
             captureSession.addInput(audioInput)
         }

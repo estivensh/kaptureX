@@ -65,6 +65,7 @@ import state.ImageCaptureResult
 import state.ImageTargetSize
 import state.ScaleType
 
+@Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun CameraPreviewImpl(
@@ -97,12 +98,9 @@ actual fun CameraPreviewImpl(
     var tapOffset by remember { mutableStateOf(Offset.Zero) }
     var currentCamSelector by remember { mutableStateOf(camSelector) }
     var currentFlashMode by remember { mutableStateOf(flashMode) }
-    LaunchedEffect(camSelector) {
-        currentCamSelector = camSelector
-    }
-    LaunchedEffect(flashMode) {
-        currentFlashMode = flashMode
-    }
+
+    LaunchedEffect(camSelector) { currentCamSelector = camSelector }
+    LaunchedEffect(flashMode) { currentFlashMode = flashMode }
 
     LaunchedEffect(currentCamSelector) {
 
@@ -136,10 +134,11 @@ actual fun CameraPreviewImpl(
         videoPreviewLayer.frame = UIScreen.mainScreen.bounds
 
         // Iniciar la sesión de captura
-        captureSession.startRunning()
+        this.launch(Dispatchers.Main) {
+            captureSession.startRunning()
+        }
     }
 
-    // UIKitView para mostrar la vista de cámara
     UIKitView(
         factory = {
             val playerContainer = UIView()
@@ -161,23 +160,10 @@ actual fun CameraPreviewImpl(
         onFocus = { onFocus { tapOffset = Offset.Zero } },
     ) { focusTapContent() }
 
-    /*Button(
-        onClick = {
-            take(photoOutput){
-                when(it){
-                    is ImageCaptureResult.Error -> println("Estado: ${it.throwable.message}")
-                    is ImageCaptureResult.Success -> println("Estado: ${it.imageFile}")
-                }
-            }
-        }
-    ) {
-        Text("Capturar")
-    }*/
     content()
     val coroutineScope = rememberCoroutineScope()
     var launchCamera by remember { mutableStateOf(value = false) }
     var launchGallery by remember { mutableStateOf(value = false) }
-    var launchSetting by remember { mutableStateOf(value = false) }
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var permissionRationalDialog by remember { mutableStateOf(value = false) }
     val permissionsManager = createPermissionsManager(object : PermissionCallback {

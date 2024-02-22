@@ -14,25 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import camerakmp.sample.composeapp.generated.resources.Res
 import extensions.ImageFile
-import extensions.toByteArray
-
-import kotlinx.cinterop.reinterpret
-import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.skia.Bitmap
-import platform.UIKit.UIImageJPEGRepresentation
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.get
 import kotlinx.cinterop.reinterpret
+import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.skia.Image
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
@@ -53,7 +47,7 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
             .background(Color.Black.copy(alpha = 0.5F), CircleShape)
             .clickable(onClick = onClick),
         contentScale = ContentScale.Crop,
-        bitmap = toImageBitmap(lastPicture) ?: ImageBitmap(100,100),
+        bitmap = toImageBitmap(lastPicture) ?: ImageBitmap(100, 100),
         contentDescription = stringResource(Res.string.gallery)
     )
 
@@ -64,8 +58,8 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
     }
 }
 
- @OptIn(ExperimentalForeignApi::class)
- fun toByteArray(image: UIImage?): ByteArray? {
+@OptIn(ExperimentalForeignApi::class)
+fun toByteArray(image: UIImage?): ByteArray? {
     return if (image != null) {
         val imageData = UIImageJPEGRepresentation(image, 0.99)
             ?: throw IllegalArgumentException("image data is null")
@@ -80,7 +74,7 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
 
 }
 
- fun toImageBitmap(image: UIImage?): ImageBitmap? {
+fun toImageBitmap(image: UIImage?): ImageBitmap? {
     val byteArray = toByteArray(image)
     return if (byteArray != null) {
         Image.makeFromEncoded(byteArray).toComposeImageBitmap()
