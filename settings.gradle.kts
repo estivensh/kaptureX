@@ -1,4 +1,5 @@
 rootProject.name = "CameraKMP"
+includeBuild("build-logic")
 include(":sample:composeApp")
 include(":camera")
 
