@@ -12,6 +12,6 @@ plugins {
 allprojects {
     plugins.withId("org.gradle.maven-publish") {
         group = "io.github.estivensh4"
-        version = "0.1.1"
+        version = "0.1.2"
     }
 }
