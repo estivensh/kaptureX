@@ -1,6 +1,13 @@
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import camera.model.CameraOption
+import extensions.ImageFile
 import focus.SquareCornerFocus
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import permissions.SharedImage
 import state.CamSelector
@@ -8,8 +15,10 @@ import state.CameraState
 import state.CaptureMode
 import state.FlashMode
 import state.ImageCaptureMode
+import state.ImageCaptureResult
 import state.ImageTargetSize
 import state.ScaleType
+import state.VideoCaptureResult
 import state.rememberCameraState
 
 @ExperimentalCameraPreview
@@ -18,10 +27,14 @@ fun CameraPreview(
     modifier: Modifier = Modifier,
     cameraState: CameraState = rememberCameraState(),
     camSelector: CamSelector = cameraState.camSelector,
+    camSelectorOnChanged: (CamSelector) -> Unit,
     captureMode: CaptureMode = cameraState.captureMode,
     imageCaptureMode: ImageCaptureMode = cameraState.imageCaptureMode,
     imageCaptureTargetSize: ImageTargetSize? = cameraState.imageCaptureTargetSize,
     flashMode: FlashMode = cameraState.flashMode,
+    flashModeOnChanged: (FlashMode) -> Unit,
+    cameraOption: CameraOption,
+    cameraOptionOnChanged: (CameraOption) -> Unit,
     scaleType: ScaleType = cameraState.scaleType,
     enableTorch: Boolean = cameraState.enableTorch,
     exposureCompensation: Int = cameraState.initialExposure,
@@ -38,7 +51,35 @@ fun CameraPreview(
     },
     onZoomRatioChanged: (Float) -> Unit = {},
     focusTapContent: @Composable () -> Unit = { SquareCornerFocus() },
-    content: @Composable () -> Unit = { CameraPreviewDefaults.Camera() },
+    content: @Composable () -> Unit = {
+        var lastPicture by remember { mutableStateOf<ImageFile?>(null) }
+        CameraPreviewDefaults.Camera(
+            cameraState = cameraState,
+            camSelector = camSelector,
+            camSelectorOnChanged = camSelectorOnChanged,
+            zoomRatio = zoomRatio,
+            lastPicture = lastPicture,
+            onTakePicture = { imageCaptureResult ->
+                when (imageCaptureResult) {
+                    is ImageCaptureResult.Error -> Napier.e { imageCaptureResult.throwable.message.orEmpty() }
+                    is ImageCaptureResult.Success -> lastPicture = imageCaptureResult.imageFile
+                }
+            },
+            onRecording = {
+                when (it) {
+                    is VideoCaptureResult.Error -> Napier.e { it.message }
+                    is VideoCaptureResult.Success -> lastPicture = it.imageFile
+                }
+            },
+            onGalleryClick = {
+                Napier.i { "Gallery click" }
+            },
+            flashMode = flashMode,
+            flashModeOnChanged = flashModeOnChanged,
+            cameraOption = cameraOption,
+            cameraOptionOnChanged = cameraOptionOnChanged
+        )
+    },
 ) {
     CameraPreviewImpl(
         modifier = modifier,

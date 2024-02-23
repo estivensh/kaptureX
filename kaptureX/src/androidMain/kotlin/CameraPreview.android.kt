@@ -25,8 +25,6 @@ import state.CaptureMode
 import state.FlashMode
 import state.ImageCaptureMode
 import state.ImageTargetSize
-import state.ImplementationMode
-import state.QualitySelector
 import state.ScaleType
 
 @SuppressLint("RestrictedApi")
@@ -81,12 +79,10 @@ actual fun CameraPreviewImpl(
             if (cameraIsInitialized) {
                 with(previewView) {
                     this.scaleType = scaleType.type
-                    this.implementationMode = implementationMode
                     onCameraTouchEvent(
                         onTap = {
-                            //if (isFocusOnTapEnabled) tapOffset = it
-                            if (true) tapOffset = it
-                                },
+                            if (isFocusOnTapEnabled) tapOffset = it
+                        },
                         onScaleChanged = {
                             if (isPinchToZoomEnabled) {
                                 val zoom = zoomRatio.clamped(it).coerceIn(

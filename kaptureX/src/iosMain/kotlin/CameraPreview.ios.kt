@@ -56,8 +56,6 @@ actual fun CameraPreviewImpl(
     focusTapContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
-    //val photoOutput = remember { cameraState.photoOutput }
-    //val captureSession = remember { AVCaptureSession() }
     val videoPreviewLayer =
         remember { AVCaptureVideoPreviewLayer(session = cameraState.captureSession) }
     var tapOffset by remember { mutableStateOf(Offset.Zero) }
@@ -94,6 +92,11 @@ actual fun CameraPreviewImpl(
         modifier = modifier,
         update = {
             if (cameraIsInitialized) {
+                latestBitmap = when {
+                    //lifecycleEvent == Lifecycle.Event.ON_STOP -> null
+                    //!isCameraIdle && camSelector != cameraState.camSelector -> bitmap
+                    else -> latestBitmap
+                }
                 cameraState.update(
                     camSelector = camSelector,
                     captureMode = captureMode,

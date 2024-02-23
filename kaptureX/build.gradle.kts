@@ -38,6 +38,8 @@ kotlin {
             implementation(libs.camera.extensions)
             implementation(libs.accompanist.permissions)
             implementation(libs.napier)
+            implementation(libs.coil.video)
+            implementation(libs.coil)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -45,6 +47,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+            implementation(libs.napier)
         }
         iosMain.dependencies {
             implementation(libs.napier)

@@ -3,19 +3,11 @@ import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.PopUpTo
 
 sealed class Router(val route: String) {
-    object Camera : Router("camera")
-    object Gallery : Router("gallery")
-    object Preview : Router("preview/{${Args.Path}}") {
-        fun createRoute(path: String) = "preview/$path"
-    }
+    data object Camera : Router("camera")
+    data object Gallery : Router("gallery")
 }
 
-object Args {
-    const val Path = "path"
-}
-
-
-fun Navigator.navigater(route: Router) {
+fun Navigator.navigated(route: Router) {
     navigate(
         route = route.route,
         options = NavOptions(

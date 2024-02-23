@@ -5,10 +5,8 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -39,18 +37,14 @@ internal fun FocusTap(
     if (isFocused) {
         val focusMovable = remember(offset) {
             movableContentOf {
-                Box(
-                    Modifier
-                        .then(modifier)
-                        .layout { measurable, constraints ->
-                            val placeable = measurable.measure(constraints)
-                            layout(placeable.width, placeable.height) {
-                                val relativeX = offset.x.roundToInt() - placeable.width / 2
-                                val relativeY = offset.y.roundToInt() - placeable.height / 2
-                                placeable.placeRelative(relativeX, relativeY)
-                            }
-                        }
-                ) {
+                Box(Modifier.then(modifier).layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints)
+                    layout(placeable.width, placeable.height) {
+                        val relativeX = offset.x.roundToInt() - placeable.width / 2
+                        val relativeY = offset.y.roundToInt() - placeable.height / 2
+                        placeable.placeRelative(relativeX, relativeY)
+                    }
+                }) {
                     focusContent()
                 }
             }
@@ -64,7 +58,7 @@ internal fun FocusTap(
  * Square corner shape composable, it only has shapes on corner border.
  * */
 @Composable
-public fun SquareCornerFocus(
+fun SquareCornerFocus(
     modifier: Modifier = Modifier,
     tapSize: Dp = DefaultFocusSize,
     borderSize: Dp = Dp.Unspecified,
@@ -72,58 +66,15 @@ public fun SquareCornerFocus(
 ) {
     val scaleAnim by scaleAsState()
     Box(
-        Modifier
-            .size(tapSize)
-            .scale(scaleAnim)
-            .drawBehind {
-                drawCornerBorder(
-                    brush = borderStroke.brush,
-                    x = size.width,
-                    y = size.height,
-                    thickness = borderStroke.width,
-                    borderSize = borderSize
-                )
-            }
-            .then(modifier),
-    )
-}
-
-
-/**
- * Square focus shape composable.
- * */
-@Composable
-public fun SquareFocus(
-    modifier: Modifier = Modifier,
-    tapSize: Dp = DefaultFocusSize,
-    borderStroke: BorderStroke = DefaultBorderStroke,
-) {
-    val scaleAnim by scaleAsState()
-    Box(
-        Modifier
-            .size(tapSize)
-            .scale(scaleAnim)
-            .border(borderStroke)
-            .then(modifier),
-    )
-}
-
-/**
- * Circle focus shape composable.
- * */
-@Composable
-public fun CircleFocus(
-    modifier: Modifier = Modifier,
-    tapSize: Dp = DefaultFocusSize,
-    borderStroke: BorderStroke = DefaultBorderStroke,
-) {
-    val scaleAnim by scaleAsState()
-    Box(
-        Modifier
-            .size(tapSize)
-            .scale(scaleAnim)
-            .border(borderStroke, CircleShape)
-            .then(modifier),
+        Modifier.size(tapSize).scale(scaleAnim).drawBehind {
+            drawCornerBorder(
+                brush = borderStroke.brush,
+                x = size.width,
+                y = size.height,
+                thickness = borderStroke.width,
+                borderSize = borderSize
+            )
+        }.then(modifier),
     )
 }
 
@@ -136,8 +87,7 @@ internal fun scaleAsState(
     var scale by remember { mutableStateOf(initialValue) }
     LaunchedEffect(scale) { scale = targetValue }
     return animateFloatAsState(
-        targetValue = scale,
-        animationSpec = animationSpec ?: tween(easing = LinearOutSlowInEasing)
+        targetValue = scale, animationSpec = animationSpec ?: tween(easing = LinearOutSlowInEasing)
     )
 }
 

@@ -30,6 +30,10 @@ kotlin {
         }
     }
 
+    kotlin.sourceSets.all {
+        languageSettings.optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
+    }
+
     sourceSets {
         all {
             languageSettings {
