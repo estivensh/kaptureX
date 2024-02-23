@@ -2,9 +2,10 @@
 
 ## Status
 
-| Android     | iOS            |
-|-------------|----------------|
-| ✅ available | ✔️ In progress |
+| Product | Android | iOS     |
+|---------|---------|---------|
+| Camera  | ⭕ beta  | ⭕ beta  |
+| Video   | ⭕ beta  | ⭕️ beta |
 
 ## Implementation
 
