@@ -1,4 +1,5 @@
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,11 @@ fun CameraPreview(
     focusTapContent: @Composable () -> Unit = { SquareCornerFocus() },
     content: @Composable () -> Unit = {
         var lastPicture by remember { mutableStateOf<ImageFile?>(null) }
+
+        LaunchedEffect(true) {
+            //lastPicture = cameraState.fileDataSource.lastPicture
+        }
+
         CameraPreviewDefaults.Camera(
             cameraState = cameraState,
             camSelector = camSelector,

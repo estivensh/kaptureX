@@ -36,7 +36,8 @@ actual class PermissionsManager actual constructor(private val callback: Permiss
             }
 
             PermissionType.GALLERY -> {
-                val status: PHAuthorizationStatus = remember { PHPhotoLibrary.authorizationStatus() }
+                val status: PHAuthorizationStatus =
+                    remember { PHPhotoLibrary.authorizationStatus() }
                 askGalleryPermission(status, permission, callback)
             }
 

@@ -1,7 +1,5 @@
 package state
 
-import androidx.camera.core.ImageAnalysis
-
 /*
 actual class ImageAnalyzer(
     private val cameraState: CameraState,
@@ -33,8 +31,8 @@ actual class ImageAnalyzer(
 
     */
 /**
-     * Update actual image analysis instance.
-     * *//*
+ * Update actual image analysis instance.
+ * *//*
 
     */
 /*public fun update(

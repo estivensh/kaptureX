@@ -12,14 +12,14 @@ publishing {
 
     publications.withType<MavenPublication> {
         pom {
-            name.set("VideoPlayer Jetpack compose for KMP")
-            description.set("VideoPlayer")
-            url.set("https://github.com/estivensh4/VideoPlayerKMP")
+            name.set("Camera Jetpack compose for KMM")
+            description.set("KaptureX")
+            url.set("https://github.com/estivensh4/kaptureX")
             licenses {
                 license {
                     name.set("Apache-2.0")
                     distribution.set("repo")
-                    url.set("https://github.com/estivensh4/VideoPlayerKMP/blob/master/LICENSE.md")
+                    url.set("https://github.com/estivensh4/kaptureX/blob/master/LICENSE.md")
                 }
             }
 
@@ -32,9 +32,9 @@ publishing {
             }
 
             scm {
-                connection.set("scm:git:ssh://github.com/estivensh4/VideoPlayerKMP.git")
-                developerConnection.set("scm:git:ssh://github.com/estivensh4/VideoPlayerKMP.git")
-                url.set("https://github.com/estivensh4/VideoPlayerKMP")
+                connection.set("scm:git:ssh://github.com/estivensh4/kaptureX.git")
+                developerConnection.set("scm:git:ssh://github.com/estivensh4/kaptureX.git")
+                url.set("https://github.com/estivensh4/kaptureX")
             }
         }
     }

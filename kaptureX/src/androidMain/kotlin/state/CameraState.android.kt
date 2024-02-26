@@ -1,16 +1,15 @@
 package state
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.hardware.camera2.CameraManager
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.TorchState
+import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoRecordEvent
@@ -33,10 +32,9 @@ import androidx.core.util.Consumer
 import extensions.ImageFile
 import extensions.compatMainExecutor
 import extensions.isImageAnalysisSupported
+import helper.FileDataSource
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
-import java.io.File
-import java.util.UUID
 
 actual class CameraState(private val context: Context) {
 
@@ -44,6 +42,7 @@ actual class CameraState(private val context: Context) {
     private val mainExecutor = context.compatMainExecutor
     private val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as? CameraManager
     private var recordController: Recording? = null
+    actual val fileDataSource = FileDataSource(context)
 
     init {
         Napier.base(DebugAntilog())
@@ -68,18 +67,13 @@ actual class CameraState(private val context: Context) {
                 controller.imageCaptureFlashMode = value.mode
             }
         }
+
     actual var hasFlashUnit: Boolean
             by mutableStateOf(controller.cameraInfo?.hasFlashUnit() ?: true)
     actual val isZoomSupported: Boolean
             by derivedStateOf { maxZoom != 1F }
     actual var maxZoom: Float
             by mutableFloatStateOf(controller.zoomState.value?.maxZoomRatio ?: INITIAL_ZOOM_VALUE)
-
-    actual companion object {
-        private val TAG = this::class.java.name
-        actual val INITIAL_ZOOM_VALUE: Float = 1F
-        actual val INITIAL_EXPOSURE_VALUE: Int = 0
-    }
 
     actual var minZoom: Float
             by mutableFloatStateOf(controller.zoomState.value?.minZoomRatio ?: INITIAL_ZOOM_VALUE)
@@ -237,21 +231,11 @@ actual class CameraState(private val context: Context) {
         onResult: (ImageCaptureResult) -> Unit
     ) {
         try {
-            val relativePath = "Camposer"
-            val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}$relativePath"
-            val currentFileName = "${System.currentTimeMillis()}-${UUID.randomUUID()}"
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, currentFileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, externalDir)
-                }
-            }
             val outputOptions = ImageCapture.OutputFileOptions
                 .Builder(
                     context.contentResolver,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    contentValues
+                    fileDataSource.imageContentValues
                 )
                 .build()
             controller.takePicture(
@@ -263,7 +247,8 @@ actual class CameraState(private val context: Context) {
                         onResult(
                             ImageCaptureResult.Success(
                                 ImageFile(
-                                    uri = outputFileResults.savedUri,
+                                    uri = outputFileResults.savedUri
+                                        ?: fileDataSource.lastPicture.uri,
                                     contentResolver = context.contentResolver
                                 )
                             )
@@ -307,31 +292,36 @@ actual class CameraState(private val context: Context) {
     @SuppressLint("MissingPermission")
     actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) =
         prepareRecording(onResult) {
-            //Log.i(TAG, "Start recording")
             Napier.i(tag = TAG) { "Start recording" }
-            val relativePath = "Camposer"
-            val externalDir = "${Environment.DIRECTORY_DCIM}${File.separator}$relativePath"
-            val currentFileName = "${System.currentTimeMillis()}-${UUID.randomUUID()}"
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, currentFileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, externalDir)
+
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                    val mediaStoreOutputOptions = MediaStoreOutputOptions
+                        .Builder(
+                            context.contentResolver,
+                            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                        )
+                        .setContentValues(fileDataSource.videoContentValues)
+                        .build()
+
+
+                    controller.startRecording(
+                        mediaStoreOutputOptions,
+                        AudioConfig.create(true),
+                        mainExecutor,
+                        getConsumerEvent(onResult)
+                    )
+                }
+
+                else -> {
+                    controller.startRecording(
+                        FileOutputOptions.Builder(fileDataSource.getFile("mp4")).build(),
+                        AudioConfig.create(true),
+                        mainExecutor,
+                        getConsumerEvent(onResult)
+                    )
                 }
             }
-            val mediaStoreOutputOptions = MediaStoreOutputOptions
-                .Builder(
-                    context.contentResolver,
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                )
-                .setContentValues(contentValues)
-                .build()
-            controller.startRecording(
-                mediaStoreOutputOptions,
-                AudioConfig.create(true),
-                mainExecutor,
-                getConsumerEvent(onResult)
-            )
         }
 
     private fun getConsumerEvent(
@@ -385,6 +375,11 @@ actual class CameraState(private val context: Context) {
             controller.isTapToFocusEnabled = value
         }
 
+    actual companion object {
+        private val TAG = this::class.java.name
+        actual val INITIAL_ZOOM_VALUE: Float = 1F
+        actual val INITIAL_EXPOSURE_VALUE: Int = 0
+    }
 }
 
 private fun CameraController.OutputSize?.toImageTargetSize(): ImageTargetSize? {
@@ -416,6 +411,17 @@ actual fun CameraState.rememberFlashMode(
 ): MutableState<FlashMode> = rememberConditionalState(
     initialValue = initialFlashMode,
     defaultValue = FlashMode.Off,
+    useSaver = useSaver,
+    predicate = hasFlashUnit
+)
+
+@Composable
+actual fun CameraState.rememberTorch(
+    initialTorch: Boolean,
+    useSaver: Boolean
+): MutableState<Boolean> = rememberConditionalState(
+    initialValue = initialTorch,
+    defaultValue = false,
     useSaver = useSaver,
     predicate = hasFlashUnit
 )

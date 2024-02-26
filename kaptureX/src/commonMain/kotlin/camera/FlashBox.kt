@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import camera.model.Flash
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -58,6 +60,7 @@ fun FlashBox(
                     flash = flash
                 ) {
                     expanded = false
+                    Napier.d { "Flash: $flash" }
                     onFlashModeChanged(flash)
                 }
             }
@@ -65,7 +68,9 @@ fun FlashBox(
     }
 
     if (!isVisible) {
-        FlashButton(enabled = hasFlashUnit, flash = flashMode) { expanded = true }
+        Column {
+            FlashButton(enabled = hasFlashUnit, flash = flashMode) { expanded = true }
+        }
     }
 
     LaunchedEffect(isVideo) {

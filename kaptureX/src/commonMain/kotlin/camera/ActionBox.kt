@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import extensions.ImageFile
 import camera.model.CameraOption
+import extensions.ImageFile
 
 @Composable
 fun ActionBox(

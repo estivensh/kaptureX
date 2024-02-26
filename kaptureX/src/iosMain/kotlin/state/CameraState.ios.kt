@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import extensions.ImageFile
+import helper.FileDataSource
 import io.github.aakira.napier.Napier
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -62,6 +63,7 @@ actual class CameraState {
     var captureSession: AVCaptureSession
     actual val controller: AVCaptureDevice =
         AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
+    actual val fileDataSource: FileDataSource = FileDataSource()
     private val photoOutput = AVCapturePhotoOutput()
     private lateinit var movieFileOutput: AVCaptureMovieFileOutput
     private lateinit var outputFileURL: NSURL
@@ -88,8 +90,11 @@ actual class CameraState {
                 .firstOrNull { it.position == AVCaptureDevicePositionBack }
         }
 
+        //captureSession.stopRunning()
         val inputs = captureSession.inputs as List<AVCaptureInput>
+        val outputs = captureSession.outputs as List<AVCaptureInput>
         inputs.forEach { captureSession.removeInput(it) }
+        outputs.forEach { captureSession.removeInput(it) }
 
         val input = captureDevice?.let { AVCaptureDeviceInput.deviceInputWithDevice(it, null) }
         if (input != null && captureSession.canAddInput(input)) {
@@ -100,6 +105,7 @@ actual class CameraState {
         captureDevice?.lockForConfiguration(null)
         captureDevice?.setFlashMode(currentFlashMode.mode)
         captureDevice?.unlockForConfiguration()
+
 
         // Configurar la captura de fotos
         captureSession.addOutput(photoOutput)
@@ -285,11 +291,11 @@ actual class CameraState {
             val newPathComponents = pathComponents + "output.mov"
             val fileURL = NSURL.fileURLWithPathComponents(newPathComponents as List<*>)
 
-            NSFileManager.defaultManager.removeItemAtURL(fileURL ?: NSURL(), error = null)
+            NSFileManager.defaultManager.removeItemAtURL(outputFileURL ?: NSURL(), error = null)
 
             // Iniciar la grabación de video
             movieFileOutput.startRecordingToOutputFileURL(
-                fileURL ?: NSURL(),
+                outputFileURL ?: NSURL(),
                 recordingDelegate = object : NSObject(),
                     AVCaptureFileOutputRecordingDelegateProtocol {
                     override fun captureOutput(
@@ -396,7 +402,18 @@ actual fun CameraState.rememberFlashMode(
     useSaver: Boolean
 ): MutableState<FlashMode> = rememberConditionalState(
     initialValue = initialFlashMode,
-    defaultValue = FlashMode.Off,
+    defaultValue = FlashMode.On,
+    useSaver = useSaver,
+    predicate = hasFlashUnit
+)
+
+@Composable
+actual fun CameraState.rememberTorch(
+    initialTorch: Boolean,
+    useSaver: Boolean
+): MutableState<Boolean> = rememberConditionalState(
+    initialValue = initialTorch,
+    defaultValue = false,
     useSaver = useSaver,
     predicate = hasFlashUnit
 )

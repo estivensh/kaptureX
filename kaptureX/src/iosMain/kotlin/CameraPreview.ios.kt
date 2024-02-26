@@ -67,7 +67,7 @@ actual fun CameraPreviewImpl(
 
     LaunchedEffect(camSelector) { currentCamSelector = camSelector }
     LaunchedEffect(flashMode) { currentFlashMode = flashMode }
-    LaunchedEffect(currentCamSelector) {
+    LaunchedEffect(currentCamSelector, key2 = true) {
         cameraState.initCamera(
             currentCamSelector = currentCamSelector,
             currentFlashMode = currentFlashMode,

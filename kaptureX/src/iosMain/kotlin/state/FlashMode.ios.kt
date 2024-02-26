@@ -16,7 +16,7 @@ actual enum class FlashMode(val mode: AVCaptureFlashMode) {
             else -> On
         }
 
-    internal companion object {
+    companion object {
         internal fun find(mode: AVCaptureFlashMode) = entries.firstOrNull { it.mode == mode } ?: Off
     }
 }

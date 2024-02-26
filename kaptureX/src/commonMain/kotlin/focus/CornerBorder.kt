@@ -71,6 +71,12 @@ private class CornerBorder(
     }
 }
 
-internal fun DrawScope.drawCornerBorder(brush: Brush, x: Float, y: Float, thickness: Dp, borderSize: Dp) {
+internal fun DrawScope.drawCornerBorder(
+    brush: Brush,
+    x: Float,
+    y: Float,
+    thickness: Dp,
+    borderSize: Dp
+) {
     CornerBorder(this, x, y, thickness, brush, borderSize)
 }

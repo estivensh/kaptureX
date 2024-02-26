@@ -14,11 +14,13 @@ import camera.model.Flash
 import camera.model.toFlash
 import camera.model.toFlashMode
 import extensions.ImageFile
+import io.github.aakira.napier.Napier
 import state.CamSelector
 import state.CameraState
 import state.FlashMode
 import state.ImageCaptureResult
 import state.VideoCaptureResult
+import state.rememberTorch
 
 @Stable
 @ExperimentalCameraPreview
@@ -43,7 +45,7 @@ object CameraPreviewDefaults {
         var zoomHasChanged by rememberSaveable { mutableStateOf(false) }
         val hasFlashUnit by rememberUpdatedState(cameraState.hasFlashUnit)
         val isRecording by rememberUpdatedState(cameraState.isRecording)
-        var enableTorch = true
+        var enableTorch by cameraState.rememberTorch(initialTorch = false)
 
         BlinkPictureBox(lastPicture, cameraOption == CameraOption.Video)
         CameraInnerContent(
@@ -57,6 +59,7 @@ object CameraPreviewDefaults {
             isVideoSupported = true,
             onFlashModeChanged = { flash ->
                 enableTorch = flash == Flash.Always
+                Napier.d { "Flash: ${flash.toFlashMode()}" }
                 flashModeOnChanged(flash.toFlashMode())
             },
             onZoomFinish = { zoomHasChanged = false },

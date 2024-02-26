@@ -2,9 +2,10 @@ package state
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import extensions.ImageFile
+import helper.FileDataSource
 
 expect class CameraState {
+    val fileDataSource: FileDataSource
     val controller: CameraController
     internal var flashMode: FlashMode
     var hasFlashUnit: Boolean
@@ -72,3 +73,9 @@ expect fun CameraState.rememberFlashMode(
     initialFlashMode: FlashMode,
     useSaver: Boolean = true
 ): MutableState<FlashMode>
+
+@Composable
+expect fun CameraState.rememberTorch(
+    initialTorch: Boolean = false,
+    useSaver: Boolean = true
+): MutableState<Boolean>

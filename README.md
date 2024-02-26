@@ -1,15 +1,24 @@
-<h1 align="left">KaptureX <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/estivensh4/kaptureX?style=flat-square"></h1>
+<div align="center">
+  <h1>KaptureX</h1>
+</div>
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.estivensh4/kaptureX)](https://mvnrepository.com/artifact/io.github.estivensh4)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.9.22-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+![badge][badge-android]
+![badge][badge-ios]
+![badge][badge-last-commit]
 
 ## Status
 
-| Product | Android | iOS     |
-|---------|---------|---------|
-| Camera  | ⭕ beta  | ⭕ beta  |
-| Video   | ⭕ beta  | ⭕️ beta |
+| Product | Android   | iOS       |
+|---------|-----------|-----------|
+| Camera  | ✅ release | ✅ release |
+| Video   | ⭕ beta    | ⭕️ beta   |
 
 ## Implementation
 
-1. add the dependency below to your **module**'s `build.gradle.kts` file:
+add the dependency `build.gradle.kts` file:
 
 ```kotlin
 commonMain.dependencies {
@@ -27,6 +36,10 @@ This library was mostly inspired by [Camposer](https://github.com/ujizin/Campose
 Support it by joining __[estivensh4](https://github.com/estivensh4/kaptureX)__ for this
 repository. :star: <br>
 Also __[follow](https://github.com/estivensh4)__ me for my next creations! 🤩
+
+[badge-android]: http://img.shields.io/badge/-android-6EDB8D.svg?style=flat
+[badge-ios]: http://img.shields.io/badge/-ios-CDCDCD.svg?style=flat
+[badge-last-commit]: https://img.shields.io/github/last-commit/estivensh4/kaptureX?style=flat-square
 
 ## License
 

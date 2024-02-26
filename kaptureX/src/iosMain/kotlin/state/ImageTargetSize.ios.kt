@@ -1,5 +1,5 @@
 package state
 
-actual  class ImageTargetSize {
+actual class ImageTargetSize {
 
 }

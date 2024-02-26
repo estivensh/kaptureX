@@ -2,7 +2,7 @@ package state
 
 import androidx.camera.core.ImageCapture
 
-actual enum class FlashMode constructor(val mode: Int) {
+actual enum class FlashMode(val mode: Int) {
     On(ImageCapture.FLASH_MODE_ON),
     Auto(ImageCapture.FLASH_MODE_AUTO),
     Off(ImageCapture.FLASH_MODE_OFF);
