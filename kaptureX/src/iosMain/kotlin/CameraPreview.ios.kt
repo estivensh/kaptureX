@@ -14,14 +14,26 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import permissions.SharedImage
+import platform.AVFoundation.AVCaptureDevice
+import platform.AVFoundation.AVCaptureDeviceInput
 import platform.AVFoundation.AVCaptureDevicePositionBack
 import platform.AVFoundation.AVCaptureDevicePositionFront
+import platform.AVFoundation.AVCaptureInput
+import platform.AVFoundation.AVCaptureSession
 import platform.AVFoundation.AVCaptureVideoPreviewLayer
+import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
+import platform.AVFoundation.AVMediaTypeVideo
+import platform.AVFoundation.position
+import platform.AVFoundation.setFlashMode
 import platform.CoreGraphics.CGRect
 import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
+import platform.UIKit.UIControlEventTouchUpInside
 import platform.UIKit.UIImage
+import platform.UIKit.UIScreen
 import platform.UIKit.UIView
+import platform.UIKit.accessibilityDirectTouchOptions
+import platform.UIKit.setAccessibilityDirectTouchOptions
 import state.CamSelector
 import state.CameraState
 import state.CaptureMode
@@ -56,8 +68,9 @@ actual fun CameraPreviewImpl(
     focusTapContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
-    val videoPreviewLayer =
-        remember { AVCaptureVideoPreviewLayer(session = cameraState.captureSession) }
+    val photoOutput = remember { cameraState.photoOutput }
+    val captureSession = remember { AVCaptureSession() }
+    val videoPreviewLayer = remember { AVCaptureVideoPreviewLayer(session = captureSession) }
     var tapOffset by remember { mutableStateOf(Offset.Zero) }
     var currentCamSelector by remember { mutableStateOf(camSelector) }
     var currentFlashMode by remember { mutableStateOf(flashMode) }
@@ -67,13 +80,46 @@ actual fun CameraPreviewImpl(
 
     LaunchedEffect(camSelector) { currentCamSelector = camSelector }
     LaunchedEffect(flashMode) { currentFlashMode = flashMode }
-    LaunchedEffect(currentCamSelector, key2 = true) {
-        cameraState.initCamera(
-            currentCamSelector = currentCamSelector,
-            currentFlashMode = currentFlashMode,
-            videoPreviewLayer = videoPreviewLayer,
-            onInit = { launch(Dispatchers.Main) { it.startRunning() } }
-        )
+
+    LaunchedEffect(currentCamSelector) {
+
+        val x = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as List<AVCaptureDevice>
+
+        val captureDevice = when (currentCamSelector) {
+            CamSelector.Front -> x
+                .firstOrNull { it.position == AVCaptureDevicePositionFront }
+
+            CamSelector.Back -> x
+                .firstOrNull { it.position == AVCaptureDevicePositionBack }
+        }
+
+        val inputs = captureSession.inputs as List<AVCaptureInput>
+        inputs.forEach { captureSession.removeInput(it) }
+
+        val input = captureDevice?.let { AVCaptureDeviceInput.deviceInputWithDevice(it, null) }
+        if (input != null && captureSession.canAddInput(input)) {
+            captureSession.addInput(input)
+        }
+
+        // Configurar el flash
+        captureDevice?.lockForConfiguration(null)
+        captureDevice?.setFlashMode(currentFlashMode.mode)
+        captureDevice?.unlockForConfiguration()
+    }
+
+    LaunchedEffect(true) {
+        // Configurar la captura de fotos
+        captureSession.addOutput(photoOutput)
+
+        // Configurar la capa de vista previa del video
+        videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        videoPreviewLayer.frame = UIScreen.mainScreen.bounds
+        //videoPreviewLayer.setAccessibilityDirectTouchOptions(UIControlEventTouchUpInside)
+
+        // Iniciar la sesión de captura
+        launch(Dispatchers.Main) {
+            captureSession.startRunning()
+        }
     }
 
     UIKitView(
@@ -90,13 +136,8 @@ actual fun CameraPreviewImpl(
             CATransaction.commit()
         },
         modifier = modifier,
-        update = {
+        update = { uiKitView ->
             if (cameraIsInitialized) {
-                latestBitmap = when {
-                    //lifecycleEvent == Lifecycle.Event.ON_STOP -> null
-                    //!isCameraIdle && camSelector != cameraState.camSelector -> bitmap
-                    else -> latestBitmap
-                }
                 cameraState.update(
                     camSelector = camSelector,
                     captureMode = captureMode,

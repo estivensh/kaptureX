@@ -64,7 +64,7 @@ actual class CameraState {
     actual val controller: AVCaptureDevice =
         AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
     actual val fileDataSource: FileDataSource = FileDataSource()
-    private val photoOutput = AVCapturePhotoOutput()
+    val photoOutput = AVCapturePhotoOutput()
     private lateinit var movieFileOutput: AVCaptureMovieFileOutput
     private lateinit var outputFileURL: NSURL
 
