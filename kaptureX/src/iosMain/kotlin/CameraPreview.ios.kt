@@ -21,19 +21,16 @@ import platform.AVFoundation.AVCaptureDevicePositionFront
 import platform.AVFoundation.AVCaptureInput
 import platform.AVFoundation.AVCaptureSession
 import platform.AVFoundation.AVCaptureVideoPreviewLayer
-import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVMediaTypeVideo
 import platform.AVFoundation.position
+import platform.AVFoundation.setExposureTargetBias
 import platform.AVFoundation.setFlashMode
 import platform.CoreGraphics.CGRect
 import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
-import platform.UIKit.UIControlEventTouchUpInside
 import platform.UIKit.UIImage
 import platform.UIKit.UIScreen
 import platform.UIKit.UIView
-import platform.UIKit.accessibilityDirectTouchOptions
-import platform.UIKit.setAccessibilityDirectTouchOptions
 import state.CamSelector
 import state.CameraState
 import state.CaptureMode
@@ -69,27 +66,30 @@ actual fun CameraPreviewImpl(
     content: @Composable () -> Unit
 ) {
     val photoOutput = remember { cameraState.photoOutput }
-    val captureSession = remember { AVCaptureSession() }
+    //val movieOutput = remember { cameraState.movieFileOutput }
+    val captureSession = remember { cameraState.captureSession }
     val videoPreviewLayer = remember { AVCaptureVideoPreviewLayer(session = captureSession) }
     var tapOffset by remember { mutableStateOf(Offset.Zero) }
     var currentCamSelector by remember { mutableStateOf(camSelector) }
     var currentFlashMode by remember { mutableStateOf(flashMode) }
+    var currentExposure by remember { mutableStateOf(exposureCompensation) }
     val isCameraIdle by rememberUpdatedState(!cameraState.isStreaming)
     var latestBitmap by remember { mutableStateOf<UIImage?>(null) }
     val cameraIsInitialized by rememberUpdatedState(cameraState.isInitialized)
 
     LaunchedEffect(camSelector) { currentCamSelector = camSelector }
     LaunchedEffect(flashMode) { currentFlashMode = flashMode }
+    LaunchedEffect(exposureCompensation) { currentExposure = exposureCompensation }
 
-    LaunchedEffect(currentCamSelector) {
+    LaunchedEffect(currentCamSelector, currentFlashMode) {
 
-        val x = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as List<AVCaptureDevice>
+        val avCaptureDeviceList = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as List<AVCaptureDevice>
 
         val captureDevice = when (currentCamSelector) {
-            CamSelector.Front -> x
+            CamSelector.Front -> avCaptureDeviceList
                 .firstOrNull { it.position == AVCaptureDevicePositionFront }
 
-            CamSelector.Back -> x
+            CamSelector.Back -> avCaptureDeviceList
                 .firstOrNull { it.position == AVCaptureDevicePositionBack }
         }
 
@@ -101,22 +101,28 @@ actual fun CameraPreviewImpl(
             captureSession.addInput(input)
         }
 
-        // Configurar el flash
+        // Configuring the flash
         captureDevice?.lockForConfiguration(null)
         captureDevice?.setFlashMode(currentFlashMode.mode)
         captureDevice?.unlockForConfiguration()
+
+        // Configuring the exposure
+        /*captureDevice?.lockForConfiguration(null)
+        captureDevice?.setExposureTargetBias(currentExposure.toFloat(), null)
+        captureDevice?.unlockForConfiguration()*/
     }
 
     LaunchedEffect(true) {
-        // Configurar la captura de fotos
+        // Configure photo capture
         captureSession.addOutput(photoOutput)
+        //captureSession?.addOutput(movieFileOutput)
 
-        // Configurar la capa de vista previa del video
-        videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        // Configure the video preview layer
+        videoPreviewLayer.videoGravity = scaleType.type
         videoPreviewLayer.frame = UIScreen.mainScreen.bounds
         //videoPreviewLayer.setAccessibilityDirectTouchOptions(UIControlEventTouchUpInside)
 
-        // Iniciar la sesión de captura
+        // Start capture session
         launch(Dispatchers.Main) {
             captureSession.startRunning()
         }
@@ -124,9 +130,7 @@ actual fun CameraPreviewImpl(
 
     UIKitView(
         factory = {
-            val playerContainer = UIView()
-            playerContainer.layer.addSublayer(videoPreviewLayer)
-            playerContainer
+            UIView().apply { layer.addSublayer(videoPreviewLayer) }
         },
         onResize = { view: UIView, rect: CValue<CGRect> ->
             CATransaction.begin()
@@ -138,6 +142,7 @@ actual fun CameraPreviewImpl(
         modifier = modifier,
         update = { uiKitView ->
             if (cameraIsInitialized) {
+
                 cameraState.update(
                     camSelector = camSelector,
                     captureMode = captureMode,
@@ -175,73 +180,4 @@ actual fun CameraPreviewImpl(
     }
 
     content()
-    /*val coroutineScope = rememberCoroutineScope()
-    var launchCamera by remember { mutableStateOf(value = false) }
-    var launchGallery by remember { mutableStateOf(value = false) }
-    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    var permissionRationalDialog by remember { mutableStateOf(value = false) }
-    val permissionsManager = createPermissionsManager(object : PermissionCallback {
-        override fun onPermissionStatus(
-            permissionType: PermissionType,
-            status: PermissionStatus
-        ) {
-            when (status) {
-                PermissionStatus.GRANTED -> {
-                    when (permissionType) {
-                        PermissionType.CAMERA -> launchCamera = true
-                        PermissionType.GALLERY -> launchGallery = true
-                    }
-                }
-
-                else -> {
-                    permissionRationalDialog = true
-                }
-            }
-        }
-
-
-    })
-
-    val cameraManager = rememberCameraManager {
-        coroutineScope.launch {
-            val bitmap = withContext(Dispatchers.Default) {
-                it?.toImageBitmap()
-            }
-            imageBitmap = bitmap
-        }
-    }
-
-    val galleryManager = rememberGalleryManager {
-        coroutineScope.launch {
-            val bitmap = withContext(Dispatchers.Default) {
-                it?.toImageBitmap()
-            }
-            imageBitmap = bitmap
-        }
-    }
-
-    if (launchGallery) {
-        if (permissionsManager.isPermissionGranted(PermissionType.GALLERY)) {
-            galleryManager.launch()
-        } else {
-            permissionsManager.askPermission(PermissionType.GALLERY)
-        }
-        launchGallery = false
-    }
-    if (launchCamera) {
-        if (permissionsManager.isPermissionGranted(PermissionType.CAMERA)) {
-            cameraManager.launch()
-        } else {
-            permissionsManager.askPermission(PermissionType.CAMERA)
-        }
-        launchCamera = false
-    }
-
-    Button(
-        onClick = {
-            galleryManager.launch()
-        }
-    ) {
-        Text("Permisos")
-    }*/
 }

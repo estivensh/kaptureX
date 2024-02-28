@@ -65,7 +65,7 @@ actual class CameraState {
         AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
     actual val fileDataSource: FileDataSource = FileDataSource()
     val photoOutput = AVCapturePhotoOutput()
-    private lateinit var movieFileOutput: AVCaptureMovieFileOutput
+    lateinit var movieFileOutput: AVCaptureMovieFileOutput
     private lateinit var outputFileURL: NSURL
 
     init {
@@ -314,11 +314,11 @@ actual class CameraState {
                                 )
                             )
                         } else {
-                            println("Estado Error: ${error.localizedDescription()} ${error.code} ${error.domain} ")
+                            println("Estado Error:  ${error.userInfo}")
                             onResult(
                                 VideoCaptureResult.Error(
                                     message = error.localizedDescription,
-                                    throwable = null
+                                    throwable = Throwable(error.localizedDescription)
                                 )
                             )
                         }

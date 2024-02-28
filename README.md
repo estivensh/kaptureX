@@ -15,6 +15,7 @@
 |---------|-----------|-----------|
 | Camera  | ✅ release | ✅ release |
 | Video   | ⭕ beta    | ⭕️ beta   |
+| Flash   | ✅ release | ⭕ beta    |
 
 ## Implementation
 
@@ -44,7 +45,7 @@ Also __[follow](https://github.com/estivensh4)__ me for my next creations! 🤩
 ## License
 
 ```
-Copyright 2023 Estiven Sánchez
+Copyright 2024 Estiven Sánchez
  
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
