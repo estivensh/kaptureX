@@ -115,7 +115,6 @@ actual fun CameraPreviewImpl(
     LaunchedEffect(true) {
         // Configure photo capture
         captureSession.addOutput(photoOutput)
-        //captureSession?.addOutput(movieFileOutput)
 
         // Configure the video preview layer
         videoPreviewLayer.videoGravity = scaleType.type

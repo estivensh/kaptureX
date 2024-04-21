@@ -15,6 +15,10 @@ import io.github.aakira.napier.Napier
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.autoreleasepool
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
 import platform.AVFoundation.AVCaptureDevice
 import platform.AVFoundation.AVCaptureDeviceDiscoverySession
 import platform.AVFoundation.AVCaptureDeviceInput
@@ -277,7 +281,7 @@ actual class CameraState {
                 AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) ?: AVCaptureDevice()
             setupVideoRecording(camera)
 
-            captureSession.startRunning()
+            CoroutineScope(Dispatchers.IO).launch { captureSession.startRunning() }
 
             // Configurar el archivo de salida para guardar el video
 
@@ -295,7 +299,7 @@ actual class CameraState {
 
             // Iniciar la grabación de video
             movieFileOutput.startRecordingToOutputFileURL(
-                outputFileURL ?: NSURL(),
+                outputFileURL = outputFileURL ?: NSURL(),
                 recordingDelegate = object : NSObject(),
                     AVCaptureFileOutputRecordingDelegateProtocol {
                     override fun captureOutput(
