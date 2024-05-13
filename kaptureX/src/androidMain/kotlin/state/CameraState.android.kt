@@ -33,8 +33,6 @@ import extensions.ImageFile
 import extensions.compatMainExecutor
 import extensions.isImageAnalysisSupported
 import helper.FileDataSource
-import io.github.aakira.napier.DebugAntilog
-import io.github.aakira.napier.Napier
 
 actual class CameraState(private val context: Context) {
 
@@ -45,7 +43,7 @@ actual class CameraState(private val context: Context) {
     actual val fileDataSource = FileDataSource(context)
 
     init {
-        Napier.base(DebugAntilog())
+       // Napier.base(DebugAntilog())
         controller.initializationFuture.addListener(
             {
                 resetCamera()
@@ -90,11 +88,11 @@ actual class CameraState(private val context: Context) {
         set(value) {
             when {
                 value == field -> {
-                    Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                    //Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
                 }
 
                 !isRecording && hasCamera(value) -> {
-                    Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                   // Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
                     if (controller.cameraSelector != value.selector) {
                         controller.cameraSelector = value.selector
                         field = value
@@ -102,8 +100,8 @@ actual class CameraState(private val context: Context) {
                     }
                 }
 
-                isRecording -> Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
-                else -> Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
+                isRecording -> {} //Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                else -> {} //Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
             }
         }
     actual var isRecording: Boolean by mutableStateOf(controller.isRecording)
@@ -138,7 +136,7 @@ actual class CameraState(private val context: Context) {
             }
             controller.setEnabledUseCases(useCases)
         } catch (exception: IllegalStateException) {
-            Napier.e(tag = TAG) { "Use case Image Analysis not supported" }
+           // Napier.e(tag = TAG) { "Use case Image Analysis not supported" }
             controller.setEnabledUseCases(captureMode.value)
         }
     }
@@ -161,7 +159,7 @@ actual class CameraState(private val context: Context) {
     internal actual var isImageAnalysisEnabled: Boolean = isImageAnalysisSupported
         set(value) {
             if (!isImageAnalysisSupported) {
-                Napier.e(tag = TAG) { "Image analysis is not supported" }
+                //Napier.e(tag = TAG) { "Image analysis is not supported" }
                 return
             }
             field = value
@@ -220,11 +218,7 @@ actual class CameraState(private val context: Context) {
         this.isFocusOnTapEnabled = isFocusOnTapEnabled
         this.flashMode = flashMode
         this.enableTorch = enableTorch
-        //this.isFocusOnTapSupported = meteringPoint.isFocusMeteringSupported
         this.imageCaptureMode = imageCaptureMode
-        //this.videoQualitySelector = videoQualitySelector
-        //setExposureCompensation(exposureCompensation)
-        //setZoomRatio(zoomRatio)
     }
 
     actual fun takePicture(
@@ -243,7 +237,7 @@ actual class CameraState(private val context: Context) {
                 mainExecutor,
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                        Napier.i(tag = TAG) { "Capture photo - ${outputFileResults.savedUri}" }
+                        //Napier.i(tag = TAG) { "Capture photo - ${outputFileResults.savedUri}" }
                         onResult(
                             ImageCaptureResult.Success(
                                 ImageFile(
@@ -256,14 +250,14 @@ actual class CameraState(private val context: Context) {
                     }
 
                     override fun onError(exception: ImageCaptureException) {
-                        Napier.i(tag = TAG) { "Capture photo - ${exception.message}" }
+                        //Napier.i(tag = TAG) { "Capture photo - ${exception.message}" }
                         onResult(ImageCaptureResult.Error(exception))
                     }
 
                 }
             )
         } catch (exception: Exception) {
-            Napier.i(tag = TAG) { "Capture photo - ${exception.message}" }
+            //Napier.i(tag = TAG) { "Capture photo - ${exception.message}" }
             onResult(ImageCaptureResult.Error(exception))
         }
     }
@@ -273,11 +267,11 @@ actual class CameraState(private val context: Context) {
         onRecordBuild: () -> Recording
     ) {
         try {
-            Napier.i(tag = TAG) { "Prepare recording" }
+            //Napier.i(tag = TAG) { "Prepare recording" }
             isRecording = true
             recordController = onRecordBuild()
         } catch (exception: Exception) {
-            Napier.i(tag = TAG) { "Fail to record! - $exception" }
+            //Napier.i(tag = TAG) { "Fail to record! - $exception" }
             isRecording = false
             onError(
                 VideoCaptureResult.Error(
@@ -292,7 +286,7 @@ actual class CameraState(private val context: Context) {
     @SuppressLint("MissingPermission")
     actual fun startRecording(onResult: (VideoCaptureResult) -> Unit) =
         prepareRecording(onResult) {
-            Napier.i(tag = TAG) { "Start recording" }
+            //Napier.i(tag = TAG) { "Start recording" }
 
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
@@ -326,8 +320,8 @@ actual class CameraState(private val context: Context) {
 
     private fun getConsumerEvent(
         onResult: (VideoCaptureResult) -> Unit
-    ): Consumer<VideoRecordEvent> = Consumer<VideoRecordEvent> { event ->
-        Napier.i(tag = TAG) { "Video Recorder Event - $event" }
+    ): Consumer<VideoRecordEvent> = Consumer { event ->
+        //Napier.i(tag = TAG) { "Video Recorder Event - $event" }
         if (event is VideoRecordEvent.Finalize) {
             isRecording = false
             val result = when {

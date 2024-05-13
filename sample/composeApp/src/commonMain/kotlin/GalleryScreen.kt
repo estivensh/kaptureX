@@ -7,9 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import camera.Section
-import camerakmp.sample.composeapp.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -19,7 +17,7 @@ fun GalleryScreen(
 ) {
     Section(
         title = {
-            Text(stringResource(Res.string.gallery).replaceFirstChar { it.uppercase() })
+            Text("Gallery".replaceFirstChar { it.uppercase() })
         }, onBackPressed = onBackPressed
     ) {
         Box(Modifier.padding(it)) {

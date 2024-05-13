@@ -16,6 +16,10 @@ kotlin {
         }
     }
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -37,7 +41,7 @@ kotlin {
             implementation(libs.camera.lifecycle)
             implementation(libs.camera.extensions)
             implementation(libs.accompanist.permissions)
-            implementation(libs.napier)
+            //implementation(libs.napier)
             implementation(libs.coil.video)
             implementation(libs.coil)
         }
@@ -47,10 +51,10 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(libs.napier)
+            //implementation(libs.napier)
         }
         iosMain.dependencies {
-            implementation(libs.napier)
+           // implementation(libs.napier)
         }
     }
 }
@@ -62,7 +66,7 @@ android {
     sourceSets["main"].apply {
         manifest.srcFile("src/androidMain/AndroidManifest.xml")
         res.srcDirs("src/androidMain/res")
-        resources.srcDirs("src/commonMain/resources")
+        resources.srcDirs("src/commonMain/composeResources")
     }
 
     defaultConfig {

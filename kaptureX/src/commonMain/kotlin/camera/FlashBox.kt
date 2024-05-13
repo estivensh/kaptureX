@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import camera.model.Flash
-import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -60,7 +59,7 @@ fun FlashBox(
                     flash = flash
                 ) {
                     expanded = false
-                    Napier.d { "Flash: $flash" }
+                    //Napier.d { "Flash: $flash" }
                     onFlashModeChanged(flash)
                 }
             }

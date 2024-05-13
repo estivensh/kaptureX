@@ -14,7 +14,6 @@ import camera.model.Flash
 import camera.model.toFlash
 import camera.model.toFlashMode
 import extensions.ImageFile
-import io.github.aakira.napier.Napier
 import state.CamSelector
 import state.CameraState
 import state.FlashMode
@@ -59,7 +58,7 @@ object CameraPreviewDefaults {
             isVideoSupported = true,
             onFlashModeChanged = { flash ->
                 enableTorch = flash == Flash.Always
-                Napier.d { "Flash: ${flash.toFlashMode()}" }
+                //Napier.d { "Flash: ${flash.toFlashMode()}" }
                 flashModeOnChanged(flash.toFlashMode())
             },
             onZoomFinish = { zoomHasChanged = false },
@@ -70,7 +69,7 @@ object CameraPreviewDefaults {
                 )
             },
             onRecording = {
-                cameraState.startRecording(onRecording)
+                cameraState.toggleRecording(onRecording)
             },
             onSwitchCamera = {
                 /*if (cameraState.isStreaming) {

@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import camera.model.CameraOption
 import extensions.ImageFile
 import focus.SquareCornerFocus
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.delay
 import permissions.SharedImage
 import state.CamSelector
@@ -67,18 +66,18 @@ fun CameraPreview(
             lastPicture = lastPicture,
             onTakePicture = { imageCaptureResult ->
                 when (imageCaptureResult) {
-                    is ImageCaptureResult.Error -> Napier.e { imageCaptureResult.throwable.message.orEmpty() }
+                    is ImageCaptureResult.Error -> {} //Napier.e { imageCaptureResult.throwable.message.orEmpty() }
                     is ImageCaptureResult.Success -> lastPicture = imageCaptureResult.imageFile
                 }
             },
             onRecording = {
                 when (it) {
-                    is VideoCaptureResult.Error -> Napier.e { it.message }
+                    is VideoCaptureResult.Error -> {} //Napier.e { it.message }
                     is VideoCaptureResult.Success -> lastPicture = it.imageFile
                 }
             },
             onGalleryClick = {
-                Napier.i { "Gallery click" }
+                //Napier.i { "Gallery click" }
             },
             flashMode = flashMode,
             flashModeOnChanged = flashModeOnChanged,

@@ -11,7 +11,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import extensions.ImageFile
 import helper.FileDataSource
-import io.github.aakira.napier.Napier
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.autoreleasepool
@@ -166,8 +165,8 @@ actual class CameraState {
                     }
                 }
 
-                isRecording -> Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
-                else -> Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
+                isRecording ->{} //Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                else ->{} //Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
             }
         }
     actual var isRecording: Boolean by mutableStateOf(false)

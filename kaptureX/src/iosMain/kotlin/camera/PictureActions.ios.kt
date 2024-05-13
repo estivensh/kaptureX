@@ -52,7 +52,7 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
             .clickable(onClick = onClick),
         contentScale = ContentScale.Crop,
         bitmap = toImageBitmap(lastPicture) ?: ImageBitmap(100, 100),
-        contentDescription = stringResource(Res.string.gallery)
+        contentDescription = "Gallery"
     )
 
     LaunchedEffect(lastPicture) {
