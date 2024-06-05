@@ -11,11 +11,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import extensions.ImageFile
 import helper.FileDataSource
+import io.github.aakira.napier.Napier
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.autoreleasepool
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import platform.AVFoundation.AVCaptureDevice
@@ -57,6 +60,8 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.fileURLWithPathComponents
 import platform.Foundation.pathComponents
+import platform.UIKit.UIImage
+import platform.UIKit.UIImageWriteToSavedPhotosAlbum
 import platform.UIKit.UIScreen
 import platform.darwin.NSObject
 
@@ -165,8 +170,8 @@ actual class CameraState {
                     }
                 }
 
-                isRecording ->{} //Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
-                else ->{} //Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
+                isRecording -> {} //Napier.e(tag = TAG) { "Device is recording, switch camera is unavailable" }
+                else -> {} //Napier.e(tag = TAG) { "Device does not have ${value.selector} camera" }
             }
         }
     actual var isRecording: Boolean by mutableStateOf(false)
@@ -242,8 +247,6 @@ actual class CameraState {
         this.flashMode = flashMode
         this.enableTorch = enableTorch
         this.imageCaptureMode = imageCaptureMode
-        //setExposureCompensation(exposureCompensation)
-        //setZoomRatio(zoomRatio)
     }
 
     actual fun takePicture(
@@ -260,6 +263,15 @@ actual class CameraState {
                 ) {
                     if (error == null) {
                         didFinishProcessingPhoto.fileDataRepresentation()?.let { photoData ->
+                            val image = UIImage.imageWithData(data = photoData)
+                            image?.let {
+                                UIImageWriteToSavedPhotosAlbum(
+                                    image = it,
+                                    completionTarget = null,
+                                    completionSelector = null,
+                                    contextInfo = null
+                                )
+                            }
                             onResult(ImageCaptureResult.Success(ImageFile(photoData)))
                         }
                     } else {
@@ -316,6 +328,7 @@ actual class CameraState {
                                     )
                                 )
                             )
+                            isRecording = true
                         } else {
                             println("Estado Error:  ${error.userInfo}")
                             onResult(
@@ -324,10 +337,11 @@ actual class CameraState {
                                     throwable = Throwable(error.localizedDescription)
                                 )
                             )
+                            isRecording = false
+
                         }
                     }
                 })
-            isRecording = true
         }
     }
 

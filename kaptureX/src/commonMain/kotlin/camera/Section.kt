@@ -31,8 +31,8 @@ fun Section(
                 title = { title() },
                 navigationIcon = {
                     NavigationIcon(
-                        icon = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(Res.string.back),
+                        icon = Icons.Default.ArrowBack,
+                        contentDescription = "back",
                         onClick = onBackPressed,
                     )
                 },

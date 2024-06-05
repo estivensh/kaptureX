@@ -52,7 +52,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(libs.precompose)
+            //implementation(libs.precompose)
             implementation(libs.accompanist.permissions)
             implementation(projects.kaptureX)
             implementation(libs.napier)
@@ -66,7 +66,7 @@ android {
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/composeResources")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
         applicationId = "io.github.estivensh4.camerakmp"
@@ -78,6 +78,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
         }
     }
     buildTypes {

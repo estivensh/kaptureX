@@ -50,7 +50,7 @@ actual fun GalleryButton(lastPicture: ImageFile?, onClick: () -> Unit) {
             .decoderFactory(VideoFrameDecoder.Factory())
             .videoFrameMillis(1)
             .build(),
-        contentDescription = stringResource(Res.string.gallery)
+        contentDescription = "Gallery"
     )
 
     LaunchedEffect(lastPicture) {

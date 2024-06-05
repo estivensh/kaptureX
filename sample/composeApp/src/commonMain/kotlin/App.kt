@@ -7,13 +7,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import camera.model.CameraOption
 import camera.model.toCaptureMode
-import moe.tlaster.precompose.PreComposeApp
+/*import moe.tlaster.precompose.PreComposeApp
 import moe.tlaster.precompose.navigation.BackStackEntry
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.RouteBuilder
 import moe.tlaster.precompose.navigation.SwipeProperties
 import moe.tlaster.precompose.navigation.rememberNavigator
-import moe.tlaster.precompose.navigation.transition.NavTransition
+import moe.tlaster.precompose.navigation.transition.NavTransition*/
 import state.CamSelector
 import state.CameraState
 import state.FlashMode
@@ -23,8 +23,8 @@ import state.rememberFlashMode
 
 @Composable
 fun App() {
-
-    PreComposeApp {
+    CameraScreen()
+    /*PreComposeApp {
         MaterialTheme {
             val navigator = rememberNavigator()
             NavHost(
@@ -47,11 +47,11 @@ fun App() {
                 }
             }
         }
-    }
+    }*/
 
 }
 
-fun RouteBuilder.newScene(
+/*fun RouteBuilder.newScene(
     route: Router,
     deepLinks: List<String> = emptyList(),
     navTransition: NavTransition? = null,
@@ -65,7 +65,7 @@ fun RouteBuilder.newScene(
         swipeProperties = swipeProperties,
         content = content
     )
-}
+}*/
 
 
 @Composable

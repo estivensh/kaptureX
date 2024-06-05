@@ -1,20 +1,20 @@
 package camera.model
 
-import io.github.estivensh4.kapturex.generated.resources.Res
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.StringResource
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlashAuto
+import androidx.compose.material.icons.filled.FlashOff
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.ui.graphics.vector.ImageVector
 import state.FlashMode
 
-@OptIn(ExperimentalResourceApi::class)
 enum class Flash(
-    val drawableRes: DrawableResource,
-    val contentRes: StringResource,
+    val drawableRes: ImageVector,
+    val contentRes: String,
 ) {
-    Off(Res.drawable.flash_off, Res.string.flash_off),
-    On(Res.drawable.flash_on, Res.string.flash_on),
-    Auto(Res.drawable.flash_auto, Res.string.flash_auto),
-    Always(Res.drawable.flash_always, Res.string.flash_always);
+    Off(Icons.Default.FlashOff, "flash_off"),
+    On(Icons.Default.FlashOn, "flash_on"),
+    Auto(Icons.Default.FlashAuto, "flash_auto"),
+    Always(Icons.Default.FlashOn, "flash_always");
 
     companion object {
         fun getCurrentValues(isVideo: Boolean) = when {

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -93,11 +94,11 @@ private fun FlashButton(
         contentPaddingValues = PaddingValues(16.dp),
         onClick = onClick,
     ) {
-        Image(
+        Icon(
             modifier = Modifier.size(32.dp),
-            painter = painterResource(flash.drawableRes),
-            colorFilter = ColorFilter.tint(if (enabled) tintColor else Color.Gray),
-            contentDescription = stringResource(flash.contentRes)
+            imageVector = flash.drawableRes,
+            tint = if (enabled) tintColor else Color.Gray,
+            contentDescription = flash.contentRes
         )
     }
 }
