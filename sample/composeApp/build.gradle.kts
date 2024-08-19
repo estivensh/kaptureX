@@ -52,7 +52,6 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            //implementation(libs.precompose)
             implementation(libs.accompanist.permissions)
             implementation(projects.kaptureX)
             implementation(libs.napier)
@@ -61,7 +60,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.estivensh4.camerakmp"
+    namespace = "io.github.estivensh.camerakmp"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -69,7 +68,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "io.github.estivensh4.camerakmp"
+        applicationId = "io.github.estivensh.camerakmp"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

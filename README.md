@@ -23,7 +23,7 @@ add the dependency `build.gradle.kts` file:
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.estivensh4:kaptureX:$version")
+    implementation("io.github.estivensh:kaptureX:$version")
 }
 ```
 

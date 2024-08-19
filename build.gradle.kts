@@ -8,10 +8,3 @@ plugins {
     alias(libs.plugins.kotlinCocoapods) apply false
     alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
 }
-
-allprojects {
-    plugins.withId("org.gradle.maven-publish") {
-        group = "io.github.estivensh4"
-        version = "0.2.0"
-    }
-}

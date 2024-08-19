@@ -13,6 +13,7 @@ androidx-test-junit = "1.1.5"
 camera = "1.3.1"
 compose = "1.6.1"
 compose-plugin = "1.6.2"
+gradleMavenPublishPlugin = "0.28.0"
 junit = "4.13.2"
 kotlin = "1.9.23"
 compose-compiler = "1.5.9"
@@ -27,6 +28,7 @@ camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cam
 camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "camera" }
 camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera" }
 camera-view = { module = "androidx.camera:camera-view", version.ref = "camera" }
+gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
