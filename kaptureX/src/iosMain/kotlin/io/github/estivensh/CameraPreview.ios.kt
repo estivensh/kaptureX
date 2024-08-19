@@ -139,7 +139,7 @@ actual fun CameraPreviewImpl(
             CATransaction.commit()
         },
         modifier = modifier,
-        update = { uiKitView ->
+        update = { _ ->
             if (cameraIsInitialized) {
 
                 cameraState.update(

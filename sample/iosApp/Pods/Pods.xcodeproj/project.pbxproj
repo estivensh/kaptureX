@@ -9,9 +9,9 @@
 /* Begin PBXAggregateTarget section */
 		B96E9866C2872A8B63836A92F517CD48 /* composeApp */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 4CCF97DCFDCB8F22BEFFBF385AB3A26B /* Build configuration list for PBXAggregateTarget "composeApp" */;
+			buildConfigurationList = 496E43172805557D932A86AED48C7A90 /* Build configuration list for PBXAggregateTarget "composeApp" */;
 			buildPhases = (
-				A282C737FC6C98E1FBA6BABD9DC8ED29 /* [CP-User] Build composeApp */,
+				13BB4251AF77A29324408E583ADAC8B9 /* [CP-User] Build composeApp */,
 			);
 			dependencies = (
 			);
@@ -226,6 +226,7 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
+			minimizedProjectReferenceProxies = 0;
 			productRefGroup = 1F86AA6785DF34AFD5A71790761717DE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -247,7 +248,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A282C737FC6C98E1FBA6BABD9DC8ED29 /* [CP-User] Build composeApp */ = {
+		13BB4251AF77A29324408E583ADAC8B9 /* [CP-User] Build composeApp */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -255,7 +256,7 @@
 			name = "[CP-User] Build composeApp";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "                if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n                  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \"YES\"\"\n                  exit 0\n                fi\n                set -ev\n                REPO_ROOT=\"$PODS_TARGET_SRCROOT\"\n                \"$REPO_ROOT/../../gradlew\" -p \"$REPO_ROOT\" $KOTLIN_PROJECT_PATH:syncFramework                     -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME                     -Pkotlin.native.cocoapods.archs=\"$ARCHS\"                     -Pkotlin.native.cocoapods.configuration=\"$CONFIGURATION\"\n";
+			shellScript = "                if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n                  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \"YES\"\"\n                  exit 0\n                fi\n                set -ev\n                REPO_ROOT=\"$PODS_TARGET_SRCROOT\"\n                \"$REPO_ROOT/../../../../../../private/var/folders/xs/csft9gm54b1gnqvq65r10q7h0000gn/T/wrap9loc/gradlew\" -p \"$REPO_ROOT\" $KOTLIN_PROJECT_PATH:syncFramework                     -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME                     -Pkotlin.native.cocoapods.archs=\"$ARCHS\"                     -Pkotlin.native.cocoapods.configuration=\"$CONFIGURATION\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -280,6 +281,23 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1E3CE3022B1B67D879E34A01EABA942D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E39B0226E98C88BE55F320558FB3270 /* composeApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		45285987FDC204B9DB7C0228892D4B3E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -408,6 +426,24 @@
 			};
 			name = Release;
 		};
+		7A024CE63BC16A50A26FF1ED4A5A80ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1BCCEA8F41CE5FB9FC32B28402E5E4C7 /* composeApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		949C971D25BBDCF6703B56FF2FC270B1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 244FC2DAA936A0B07ACEFDC74E2D54B8 /* Pods-iosApp.release.xcconfig */;
@@ -483,41 +519,6 @@
 			};
 			name = Debug;
 		};
-		BA44E6AE04F977D093ED79111BDB1A01 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1BCCEA8F41CE5FB9FC32B28402E5E4C7 /* composeApp.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		CE0BCE72F662ED65A5A230FB00D49489 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4E39B0226E98C88BE55F320558FB3270 /* composeApp.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -530,11 +531,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		4CCF97DCFDCB8F22BEFFBF385AB3A26B /* Build configuration list for PBXAggregateTarget "composeApp" */ = {
+		496E43172805557D932A86AED48C7A90 /* Build configuration list for PBXAggregateTarget "composeApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CE0BCE72F662ED65A5A230FB00D49489 /* Debug */,
-				BA44E6AE04F977D093ED79111BDB1A01 /* Release */,
+				1E3CE3022B1B67D879E34A01EABA942D /* Debug */,
+				7A024CE63BC16A50A26FF1ED4A5A80ED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

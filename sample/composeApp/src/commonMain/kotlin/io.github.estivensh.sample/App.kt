@@ -1,5 +1,6 @@
 package io.github.estivensh.sample
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,91 +26,13 @@ import io.github.estivensh.state.rememberFlashMode
 
 @Composable
 fun App() {
-    CameraScreen()
-    /*PreComposeApp {
-        MaterialTheme {
-            val navigator = rememberNavigator()
-            NavHost(
-                navigator = navigator,
-                navTransition = NavTransition(),
-                initialRoute = Router.Camera.route
-            ) {
-                newScene(Router.Camera) {
-                    CameraScreen()
-                }
-                newScene(Router.Gallery) {
-                    GalleryScreen(
-                        onBackPressed = {
-                            navigator.popBackStack()
-                        },
-                        onPreviewClick = {
-
-                        }
-                    )
-                }
-            }
-        }
-    }*/
-
-}
-
-/*fun RouteBuilder.newScene(
-    route: Router,
-    deepLinks: List<String> = emptyList(),
-    navTransition: NavTransition? = null,
-    swipeProperties: SwipeProperties? = null,
-    content: @Composable (BackStackEntry) -> Unit,
-) {
-    scene(
-        route = route.route,
-        deepLinks = deepLinks,
-        navTransition = navTransition,
-        swipeProperties = swipeProperties,
-        content = content
-    )
-}*/
-
-
-@Composable
-fun CameraScreen() {
-    val cameraState = rememberCameraState()
+     val cameraState = rememberCameraState()
     CameraSection(
         cameraState = cameraState,
         useFrontCamera = false,
         usePinchToZoom = true
     )
-    /*val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    when (val result: CameraUiState = uiState) {
-        is CameraUiState.Ready -> {
-            val cameraState = rememberCameraState()
-            //val context = LocalContext.current
-            CameraSection(
-                cameraState = cameraState,
-                useFrontCamera = result.user.useCamFront,
-                usePinchToZoom = result.user.usePinchToZoom,
-                useTapToFocus = result.user.useTapToFocus,
-                lastPicture = result.lastPicture,
-                qrCodeText = result.qrCodeText,
-                onGalleryClick = onGalleryClick,
-                onConfigurationClick = onConfigurationClick,
-                onRecording = {
-                    //viewModel.toggleRecording(context.contentResolver, cameraState)
-                              },
-                onTakePicture = { viewModel.takePicture(cameraState) },
-                //onAnalyzeImage = viewModel::analyzeImage
-            )
-
-            LaunchedEffect(result.throwable) {
-                if (result.throwable != null) {
-                   // Toast.makeText(context, result.throwable.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        CameraUiState.Initial -> Unit
-    }*/
 }
-
 
 @OptIn(ExperimentalCameraPreview::class)
 @Composable

@@ -52,6 +52,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
             implementation(libs.accompanist.permissions)
             implementation(projects.kaptureX)
             implementation(libs.napier)

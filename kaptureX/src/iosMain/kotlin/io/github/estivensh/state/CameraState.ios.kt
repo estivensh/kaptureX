@@ -303,11 +303,11 @@ actual class CameraState {
             val newPathComponents = pathComponents + "output.mov"
             val fileURL = NSURL.fileURLWithPathComponents(newPathComponents as List<*>)
 
-            NSFileManager.defaultManager.removeItemAtURL(outputFileURL ?: NSURL(), error = null)
+            NSFileManager.defaultManager.removeItemAtURL(outputFileURL, error = null)
 
             // Iniciar la grabación de video
             movieFileOutput.startRecordingToOutputFileURL(
-                outputFileURL = outputFileURL ?: NSURL(),
+                outputFileURL = outputFileURL,
                 recordingDelegate = object : NSObject(),
                     AVCaptureFileOutputRecordingDelegateProtocol {
                     override fun captureOutput(

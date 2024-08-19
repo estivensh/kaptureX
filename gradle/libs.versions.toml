@@ -20,7 +20,6 @@ compose-compiler = "1.5.9"
 coil = "2.5.0"
 accompanist = "0.32.0"
 precompose = "1.6.0-beta02"
-org-jetbrains-kotlin-jvm = "1.9.22"
 napier = "2.7.1"
 
 [libraries]
