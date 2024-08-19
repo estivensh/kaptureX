@@ -22,4 +22,5 @@ java {
 dependencies {
     api(libs.kotlinGradlePlugin)
     api(libs.androidGradlePlugin)
+    api(libs.gradle.maven.publish.plugin)
 }

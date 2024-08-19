@@ -1,10 +1,14 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
-    id("javadoc-stub-convention")
     id("publication-convention")
 }
+
+group = "io.github.estivensh"
+version = "0.2.1"
 
 kotlin {
     androidTarget {
@@ -16,6 +20,7 @@ kotlin {
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
@@ -60,7 +65,7 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.estivensh4.kaptureX"
+    namespace = "io.github.estivensh.kaptureX"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].apply {
