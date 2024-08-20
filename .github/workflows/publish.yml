@@ -16,6 +16,14 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - run: ./gradlew incrementPatch
+        name: Increment Version
+
+      - name: Save version to file
+        run: |
+          version=$(./gradlew printVersion | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9]+)?')
+          echo $version > version.txt
+
       - name: Install GPG
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
@@ -45,3 +53,31 @@ jobs:
       - name: Publish To Maven Central
         run: |
           ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache
+
+      - name: Read Changelog
+        id: read_changelog
+        run: |
+          changelog=$(cat CHANGELOG.md)
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$changelog" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Prepare version for file name
+        id: prepare_version
+        run: |
+          version=$(cat version.txt)
+          sanitized_version=${version//./_}
+          echo "SANITIZED_VERSION=$sanitized_version" >> $GITHUB_ENV
+          echo "VERSION_NUMBER=$version" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.VERSION_NUMBER }}
+          release_name: KaptureX ${{ env.VERSION_NUMBER }}
+          body: |
+            ## Changelog
+            ${{ env.CHANGELOG }}

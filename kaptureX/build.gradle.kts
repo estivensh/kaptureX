@@ -1,14 +1,18 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
     id("publication-convention")
+    id("net.thauvin.erik.gradle.semver") version "1.0.4"
 }
 
 group = "io.github.estivensh"
-version = "0.2.1"
+version = getLocalProperty("version.semver")
 
 kotlin {
     androidTarget {
@@ -100,5 +104,21 @@ android {
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
     }
+}
+
+tasks.create("printVersion"){
+   println(getLocalProperty("version.semver"))
+}
+
+fun getLocalProperty(key: String, file: String = "version.properties"): Any {
+    val properties = Properties()
+    val localProperties = File("kapturex/$file")
+    if (localProperties.isFile) {
+        InputStreamReader(FileInputStream(localProperties), Charsets.UTF_8).use { reader ->
+            properties.load(reader)
+        }
+    } else error("File from not found")
+
+    return properties.getProperty(key)
 }
 
