@@ -4,8 +4,8 @@
 
 KaptureX is a library designed to facilitate the integration of image and video capture capabilities in multiplatform applications developed with Kotlin. This library is especially useful for those who want to create applications that support multiple platforms such as Android and iOS, providing a unified API and reusable components.
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.estivensh4/kaptureX)](https://mvnrepository.com/artifact/io.github.estivensh)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.9.22-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.estivensh/kaptureX)](https://mvnrepository.com/artifact/io.github.estivensh)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.0.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![GitHub License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
 ![badge][badge-android]
 ![badge][badge-ios]
